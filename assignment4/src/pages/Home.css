@@ -1,0 +1,31 @@
+/*Sanghyun Jun
+Sanghyun.Jun.1@stonybrook.edu*/
+
+.main-list > li {
+    font-size: 24px; 
+    font-weight: bold;
+    margin-top: 20px;
+    list-style-type: disc; 
+  }
+  
+  .sub-list {
+    list-style-type: none;
+    padding-left: 20px; 
+  }
+  
+  .sub-list li {
+    margin-bottom: 8px; 
+  }
+  
+  .numbered-list {
+    list-style-type: decimal; 
+    padding-left: 40px; 
+  }
+  
+  .numbered-list li {
+    margin-bottom: 8px; 
+  }
+
+  li {
+    margin: 20px 0;
+  }
