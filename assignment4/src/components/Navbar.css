@@ -1,0 +1,238 @@
+/*
+Sanghyun Jun
+Sanghyun.Jun.1@stonybrook.edu
+*/
+/* Container padding settings */
+@media (min-width: 800px) {
+    .container {
+        padding-left: calc((100vw - 800px) * 0.3);
+        padding-right: calc((100vw - 800px) * 0.3);
+    }
+}
+
+@media (max-width: 800px) {
+    .container {
+        padding: 0;
+    }
+}
+
+/* Upside-down triangle */
+.upsidedown-triangle {
+    display: inline-block;
+    width: 0;
+    height: 0;
+    margin-left: 8px;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-top: 8px solid white;
+}
+
+/* LARGE Navbar */
+.navbar-large {
+    background-color: #000; 
+    height: 70px;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.navbar-large ul {
+    list-style: none;
+    display: flex;
+    align-items: center;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+}
+
+.navbar-large li {
+    margin: 0;
+    padding: 0;
+}
+
+.navbar-large a {
+    display: flex;
+    justify-content: center; 
+    align-items: center;
+    height: 40px;
+    text-decoration: none;
+    color: white;
+    padding: 0;
+    margin: 0;
+}
+
+.navbar-large li.left-icon {
+    margin-left: 30px;
+    flex-grow: 0;
+}
+
+.navbar-large li.right-icon {
+    margin-right: 30px;
+    flex-grow: 0;
+    color: white;
+    background-color: black;
+}
+
+.Sign-in{
+    color: white;
+    background-color: black;
+    border: 1px solid white;
+    font-size: 16px;
+    padding: 5px;
+}
+
+.navbar-large .center-icons {
+    display: flex;
+    justify-content: center; 
+    align-items: center;
+    gap: 10px; 
+    flex-grow: 1;
+}
+
+.navbar-large .center-icons a:hover {
+    background-color: gray;
+}
+
+.navbar-large .center-icons li {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.navbar-large .center-icons li a {
+    width: 100px; 
+}
+
+.dropdown {
+    display: block;
+    position: relative;
+    text-align: center;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    box-shadow: 0px 8px 20px 0px rgba(0, 0, 0, 0.2);
+}
+
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+.dropdown-content a {
+    background-color: black;
+    display: flex;
+    align-items: center; 
+    justify-content: center;
+    color: white;
+    padding: 10px;
+    height: 30px;
+    min-width: 150px; 
+    text-decoration: none;
+}
+
+.dropdown-content a:hover {
+    background-color: gray; 
+}
+
+/* SMALL Navbar */
+.navbar-small {
+    background-color: #000;
+    height: 70px;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.navbar-small ul {
+    list-style: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0;
+    margin: 0;
+    width: 100%;
+}
+
+.navbar-small a {
+    text-decoration: none;
+    color: white; 
+}
+
+.navbar-small li:first-child {
+    margin-left: 20px;
+}
+
+.navbar-small li:last-child {
+    margin-right: 20px;
+}
+
+/* Side bar */
+.side-bar {
+    flex-direction: column;
+    position: static;
+    width: 100%;
+    display: none;
+    margin: 0;
+    padding: 0;
+}
+
+.side-bar.open {
+    display: flex;
+}
+
+.side-bar ul {
+    list-style: none;
+    text-align: center;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+.side-bar .dropdown-content a{
+    padding: 15px;
+    height: 40px;
+}
+.side-bar a {
+    display: flex; 
+    align-items: center; 
+    justify-content: center;
+    height: 70px; 
+    background-color: black;
+    color: white;
+    text-decoration: none;
+}
+
+.side-bar a:hover {
+    background-color: gray;
+}
+
+.side-bar li{
+    margin: 0;
+    padding: 0;
+}
+
+/* Media queries for large and small screens */
+@media (min-width: 600px) {
+    .navbar-large {
+        display: flex;
+    }
+    .navbar-small {
+        display: none;
+    }
+    .side-bar.open {
+        display: none;
+    }
+}
+
+@media (max-width: 599px) {
+    .navbar-large {
+        display: none;
+    }
+    .navbar-small {
+        display: flex;
+    }
+}
