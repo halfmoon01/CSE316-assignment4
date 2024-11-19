@@ -21,7 +21,7 @@ const SignUp = () => {
     event.preventDefault();
     
     if (formData.password !== formData.password2){
-        alert("Check password is not the same with password");
+        alert("Confirm password is not the same with password");
         return;
     }
 
@@ -36,17 +36,14 @@ const SignUp = () => {
             name: formData.name,
           }),
         });
-  
+        
+        const data = await response.json();
         if (!response.ok) {
-          const errorData = await response.json();
-          alert(errorData.message);
+          alert(data.message);
           return;
         }
-
-        const data = await response.json();
-        alert("User registered successfully!");
+        alert(data.message );
       } catch (error) {
-        console.error("Error during signup:", error);
         alert("Failed to connect to the server. Please try again.");
       }
     };

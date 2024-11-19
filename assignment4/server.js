@@ -6,7 +6,7 @@ import dotenv from 'dotenv';
 import mysql from 'mysql2';
 import cloudinary from 'cloudinary';
 import cors from 'cors';
-import bcrypt from 'bcrypt';
+
 
 dotenv.config(); 
 const app = express(); 
@@ -48,25 +48,51 @@ app.post("/signup", (req, res) => {
     }
 
     db.query("SELECT * FROM users WHERE email = ?", [email], (err, results) => {
-      if (err) {
-        console.error("Database error:", err);
-        return res.status(500).json({ message: "Database query failed." });
-      }
-  
-      if (results.length > 0) {
-        return res.status(400).json({ message: "Email already exists" });
-      }
-
-      const query = "INSERT INTO users (email, password, name) VALUES (?, ?, ?)";
-      db.query(query, [email, password, name], (err, result) => {
         if (err) {
-          console.error("Insertion error:", err);
-          return res.status(500).json({ message: "Failed to create user." });
+            console.error("Database error:", err);
+            return res.status(500).json({ message: "Database query failed." });
         }
-        res.status(201).json({ message: "User created successfully." });
+  
+        if (results.length > 0) {
+            return res.status(400).json({ message: "Email already exists" });
+        }
+
+        const query = "INSERT INTO users (email, password, name) VALUES (?, ?, ?)";
+        db.query(query, [email, password, name], (err, result) => {
+        if (err) {
+            return res.status(500).json({ message: "Failed to create user." });
+        }
+        res.status(201).json({ message: "User registered successfully." });
       });
     });
   });
+
+
+app.post("/login", async (req, res) => {
+    const { email, password } = req.body;
+    
+    if (!email || !password) {
+      return res.status(400).json({ message: "All fields are required." });
+    }
+  
+    db.query("SELECT * FROM users WHERE email = ?", [email], async (err, results) => {
+        if (err) {
+            console.error("Database query error:", err);
+            return res.status(500).json({ message: "Database query failed." });
+        }
+  
+        if (results.length === 0) {
+            return res.status(404).json({ message: "Wrong Email or wrong password." });
+        }
+  
+        const user = results[0];
+        if (password !== user.password) {
+            return res.status(401).json({ message: "Wrong Email or wrong password." });
+        }
+        res.status(200).json({ message: "Login successful.", name: user.name });
+    });
+});
+
 
 app.listen(process.env.PORT, () => {
   console.log(`Server is running on http://localhost:${process.env.PORT}`);

@@ -2,8 +2,8 @@
 //Sanghyun.Jun.1@stonybrook.edu
 
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
-
+import { Link, useNavigate} from "react-router-dom";
+import { hashutil } from '../../Hashutil';
 
 import './SignIn.css';
 const SignIn = () => {
@@ -12,18 +12,40 @@ const SignIn = () => {
     password: "",
   });
 
+  const navigate = useNavigate(); 
+
   const handleChange = (event) => {
     const { name, value } = event.target;
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    if (!formData.email || !formData.password) {
-      alert("Please fill in both email and password.");
-    }else{
-      alert("Sucess!");
+
+    try {
+      const hashedPassword = hashutil(formData.email, formData.password);
+      const response = await fetch("http://localhost:8080/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: formData.email,
+          password: hashedPassword,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        alert(errorData.message);
+        return;
+      }
+
+      const data = await response.json();
+      alert(`Welcome, ${data.name}!`); 
+      navigate("/home"); 
+    } catch (error) {
+      alert("Failed to connect to the server. Please try again.");
     }
+
   };
 
   return (
