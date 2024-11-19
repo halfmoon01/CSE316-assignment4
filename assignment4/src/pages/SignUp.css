@@ -1,0 +1,92 @@
+/* Sanghyun Jun
+Sanghyun.Jun.1@stonybrook.edu
+*/
+.SignUpForm {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+.SignUpForm .title{
+    margin: 20px;
+}
+
+.SignUpForm .button-group{
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin: 10px;
+  }
+
+
+.SignUpForm .button-group button {
+    padding: 10px 20px;
+    border: 1px solid black;
+    border-radius: 4px;
+    cursor: pointer;
+
+    background-color: white;
+    color: blue;
+    border-color: blue;
+    border: 1px solid black;
+  }
+
+.SignUpForm .button-group button:hover{
+    background-color: blue;
+    color: white;
+}
+
+
+.SignUpForm .email_input{
+    margin: 10px;
+}
+
+.SignUpForm .email_input input{
+    width: 250px; 
+    padding: 10px 10px; 
+    border: 1px solid #000000; 
+    border-radius: 4px; 
+    box-sizing: border-box;
+    background-color: rgb(200, 239, 255);
+}
+
+
+.SignUpForm .password_input{
+    margin: 10px;
+}
+
+.SignUpForm .password_input input{
+    width: 250px;
+    padding: 10px 10px; 
+    border: 1px solid #000000; 
+    border-radius: 4px; 
+    box-sizing: border-box;
+    background-color: rgb(200, 239, 255);
+}
+
+.SignUpForm .password_check{
+    margin: 10px;
+}
+
+.SignUpForm .password_check input{
+    width: 250px;
+    padding: 10px 10px; 
+    border: 1px solid #000000; 
+    border-radius: 4px; 
+    box-sizing: border-box;
+    background-color: rgb(200, 239, 255);
+}
+
+.SignUpForm .name_input{
+    margin: 10px;
+}
+
+.SignUpForm .name_input input{
+    width: 250px;
+    padding: 10px 10px; 
+    border: 1px solid #000000; 
+    border-radius: 4px; 
+    box-sizing: border-box;
+    background-color: rgb(200, 239, 255);
+}

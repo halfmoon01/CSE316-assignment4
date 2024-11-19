@@ -2,6 +2,9 @@
 //Sanghyun.Jun.1@stonybrook.edu
 
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
+
+
 import './SignIn.css';
 const SignIn = () => {
   const [formData, setFormData] = useState({
@@ -24,7 +27,7 @@ const SignIn = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form className = "SignInForm" onSubmit={handleSubmit}>
       <div className="title">
         <h1>Sign In</h1>
       </div>
@@ -50,7 +53,9 @@ const SignIn = () => {
       </div>
       <div className="button-group">
         <button className = "IN" type="submit">Sign In</button>
-        <button className = "UP">Sign Up</button>
+        <Link to="/sign-up">
+          <button className="UP">Sign Up</button>
+        </Link>
       </div>
     </form>
   );
