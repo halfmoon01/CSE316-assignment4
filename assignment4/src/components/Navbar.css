@@ -49,6 +49,14 @@ Sanghyun.Jun.1@stonybrook.edu
 .navbar-large li {
     margin: 0;
     padding: 0;
+    display: flex;
+    justify-content: center; 
+    align-items: center;
+    height: 40px;
+    text-decoration: none;
+    color: white;
+    padding: 0;
+    margin: 0;
 }
 
 .navbar-large a {
@@ -82,6 +90,13 @@ Sanghyun.Jun.1@stonybrook.edu
     padding: 5px;
 }
 
+.navbar-large li.right-button .group{
+    display: flex;
+    gap: 10px;
+    justify-content: center; 
+    align-items: center;
+}
+
 .navbar-large .center-icons {
     display: flex;
     justify-content: center; 
@@ -90,7 +105,7 @@ Sanghyun.Jun.1@stonybrook.edu
     flex-grow: 1;
 }
 
-.navbar-large .center-icons a:hover {
+.navbar-large .center-icons :hover {
     background-color: gray;
 }
 
@@ -98,9 +113,6 @@ Sanghyun.Jun.1@stonybrook.edu
     display: flex;
     justify-content: center;
     align-items: center;
-}
-
-.navbar-large .center-icons li a {
     width: 100px; 
 }
 
@@ -188,25 +200,29 @@ Sanghyun.Jun.1@stonybrook.edu
 .side-bar ul {
     list-style: none;
     text-align: center;
-    height: 100%;
     margin: 0;
     padding: 0;
 }
-.side-bar .dropdown-content a{
+.side-bar .dropdown-content li{
     padding: 15px;
     height: 40px;
 }
-.side-bar a {
+.side-bar li {
     display: flex; 
     align-items: center; 
     justify-content: center;
-    height: 70px; 
+    height: 50px; 
     background-color: black;
     color: white;
     text-decoration: none;
 }
 
-.side-bar a:hover {
+.side-bar a{
+    color: white;
+    text-decoration: none;
+}
+
+.side-bar li:hover {
     background-color: gray;
 }
 

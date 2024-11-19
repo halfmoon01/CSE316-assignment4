@@ -6,7 +6,7 @@ import { Link, useNavigate} from "react-router-dom";
 import { hashutil } from '../../Hashutil';
 
 import './SignIn.css';
-const SignIn = () => {
+const SignIn = ({setIsLoggedIn}) => {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -40,6 +40,7 @@ const SignIn = () => {
       }
 
       const data = await response.json();
+      setIsLoggedIn(true); // 로그인 상태 변경
       alert(`Welcome, ${data.name}!`); 
       navigate("/home"); 
     } catch (error) {

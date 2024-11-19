@@ -3,18 +3,27 @@
 
 
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate} from 'react-router-dom';
 import homeIcon from '../AssignImages/home.png';
 import userIcon from '../AssignImages/user.png';
 import menuIcon from '../AssignImages/menu.png';
 import './Navbar.css';
 
-const Navbar = () => {
+const Navbar = ({isLoggedIn, setIsLoggedIn}) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
+
+  const navigate = useNavigate(); 
+  const handleLogout = () => {
+    setIsLoggedIn(false);
+    localStorage.removeItem("authToken"); 
+    alert("Logged out successfully!");
+    navigate("/home"); 
+  };
+
 
   return (
     <>
@@ -41,16 +50,30 @@ const Navbar = () => {
                 <Link to="/my-reservation">Reservation History</Link>
               </div>
             </li>
-            <li>
-              <Link to="/sign-in">Sign In</Link>
-            </li>
+            {isLoggedIn ? (
+                <>
+                  <li onClick={handleLogout}>
+                    Sign Out
+                  </li>
+                </>
+              ) : (
+                <li>
+                  <Link to="/sign-in">Sign In</Link>
+                </li>
+              )}
           </div>
 
           <li className="right-button">
-            {/* <img src={userIcon} width="30" height="30" alt="User" /> */}
-            <Link to="/sign-in">
+            {isLoggedIn ? (
+              <div className = "group">
+                <img src={userIcon} width="30" height="30" alt="User" />
+                <button onClick={handleLogout}>Sign Out</button>
+              </div>
+            ): (
+              <Link to="/sign-in">
                 <button>Sign in</button>
             </Link>
+            )}
           </li>
         </ul>
       </nav>
@@ -85,9 +108,17 @@ const Navbar = () => {
               <Link to="/my-reservation">Reservation History</Link>
             </div>
           </li>
-          <li>
-            <Link to="/sign-in">Sign In</Link>
-          </li>
+          {isLoggedIn ? (
+                <>
+                  <li onClick={handleLogout}>
+                    Sign Out
+                  </li>
+                </>
+              ) : (
+                <li>
+                  <Link to="/sign-in">Sign In</Link>
+                </li>
+              )}
         </ul>
       </nav>
       </div>

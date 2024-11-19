@@ -11,14 +11,15 @@ import SignUp from './pages/SignUp';
 import './App.css';
 
 function App() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false); // login state
   return (
     <Router>
-      <Navbar />
+      <Navbar isLoggedIn = {isLoggedIn} setIsLoggedIn = {setIsLoggedIn} />
       <div className="container">
       <Routes>
           <Route path="/" element={<Navigate to="/home" replace />} />
           <Route path="/home" element={<Home />} />
-          <Route path="/sign-in" element={<SignIn />} />
+          <Route path="/sign-in" element={<SignIn setIsLoggedIn={setIsLoggedIn} />} />
           <Route path="/sign-up" element={<SignUp />} />
         </Routes>
       </div>
