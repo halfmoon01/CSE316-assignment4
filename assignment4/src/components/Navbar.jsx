@@ -46,10 +46,10 @@ const Navbar = () => {
             </li>
           </div>
 
-          <li className="right-icon">
+          <li className="right-button">
             {/* <img src={userIcon} width="30" height="30" alt="User" /> */}
             <Link to="/sign-in">
-                <button className='Sign-in' >Sign in</button>
+                <button>Sign in</button>
             </Link>
           </li>
         </ul>

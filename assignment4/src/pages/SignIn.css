@@ -1,0 +1,67 @@
+/* Sanghyun Jun
+Sanghyun.Jun.1@stonybrook.edu
+*/
+form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+form .title{
+    margin: 20px;
+}
+
+form .button-group{
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin: 10px;
+  }
+
+
+form .button-group button {
+    padding: 10px 20px;
+    border: 1px solid black;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+form .button-group .IN {
+    background-color: white;
+    color: blue;
+    border: 1px solid black;
+}
+
+form .button-group .UP{
+    background-color: white;
+    color: black;
+    border: 1px solid black;
+}
+
+form .email_input{
+    margin: 10px;
+}
+
+form .email_input input{
+    width: 250px; 
+    padding: 10px 10px; 
+    border: 1px solid #000000; 
+    border-radius: 4px; 
+    box-sizing: border-box;
+    background-color: rgb(200, 239, 255);
+}
+
+
+form .password_input{
+    margin: 10px;
+}
+
+form .password_input input{
+    width: 250px;
+    padding: 10px 10px; 
+    border: 1px solid #000000; 
+    border-radius: 4px; 
+    box-sizing: border-box;
+    background-color: rgb(200, 239, 255);
+}

@@ -7,6 +7,7 @@ import mysql from 'mysql2';
 import cloudinary from 'cloudinary';
 import cors from 'cors';
 
+
 dotenv.config(); 
 const app = express(); 
 app.use(cors());
@@ -34,3 +35,4 @@ cloudinary.v2.config({
     api_key: process.env.CLOUD_API_KEY,
     api_secret: process.env.CLOUD_API_SECRET
 });
+

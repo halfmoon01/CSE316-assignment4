@@ -67,14 +67,14 @@ Sanghyun.Jun.1@stonybrook.edu
     flex-grow: 0;
 }
 
-.navbar-large li.right-icon {
+.navbar-large li.right-button {
     margin-right: 30px;
     flex-grow: 0;
     color: white;
     background-color: black;
 }
 
-.Sign-in{
+.navbar-large li.right-button button{
     color: white;
     background-color: black;
     border: 1px solid white;
@@ -164,11 +164,11 @@ Sanghyun.Jun.1@stonybrook.edu
 }
 
 .navbar-small li:first-child {
-    margin-left: 20px;
+    margin-left: 30px;
 }
 
 .navbar-small li:last-child {
-    margin-right: 20px;
+    margin-right: 30px;
 }
 
 /* Side bar */
