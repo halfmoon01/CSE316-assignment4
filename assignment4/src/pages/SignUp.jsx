@@ -1,8 +1,9 @@
 //Sanghyun Jun
 //Sanghyun.Jun.1@stonybrook.edu
-
+import { hashutil } from '../../Hashutil';
 import React, { useState } from "react";
 import './SignUp.css';
+
 const SignUp = () => {
   const [formData, setFormData] = useState({
     email: "",
@@ -16,15 +17,40 @@ const SignUp = () => {
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    if (!formData.email || !formData.password || !formData.password2 || !formData.name) {
-      alert("Please fill every fields.");
-    }else if (formData.password !== formData.password2){
+    
+    if (formData.password !== formData.password2){
         alert("Check password is not the same with password");
-    }else
+        return;
+    }
+
+    try {
+        const hashedPassword = hashutil(formData.email, formData.password);
+        const response = await fetch("http://localhost:8080/signup", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            email: formData.email,
+            password: hashedPassword,
+            name: formData.name,
+          }),
+        });
+  
+        if (!response.ok) {
+          const errorData = await response.json();
+          alert(errorData.message);
+          return;
+        }
+
+        const data = await response.json();
         alert("User registered successfully!");
-  };
+      } catch (error) {
+        console.error("Error during signup:", error);
+        alert("Failed to connect to the server. Please try again.");
+      }
+    };
+  
 
   return (
     <form className = "SignUpForm" onSubmit={handleSubmit}>
