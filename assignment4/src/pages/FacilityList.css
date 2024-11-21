@@ -1,0 +1,61 @@
+/*
+Sanghyun Jun
+Sanghyun.Jun.1@stonybrook.edu
+*/
+
+.facility-list {
+    margin-left: 0;
+    display: grid;
+    padding: 10px;
+    gap: 20px;
+  }
+  
+  @media (min-width: 800px) {
+    .facility-list {
+        margin-left: 0;
+        grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (min-width: 600px) and (max-width: 799px) {
+    .facility-list {
+        grid-template-columns: 1fr;
+        margin-left: calc((100vw - 600px)*0.8);  
+    }
+  }
+
+  @media (max-width: 599px) {
+    .facility-list {
+        margin-left: 0;
+        grid-template-columns: 1fr;
+    }
+  }
+
+  .facility-container {
+    width: 430px;
+    height: 450px;
+    padding: 20px;
+    background-color: white;
+  }
+  
+  .facility-image {
+    width: 100%;
+    height: width * 9 / 16;
+    border-radius: 10px;
+    margin-bottom: 5px;
+  }
+  
+  .facility-details h2 {
+    font-size: 25px;
+    margin: 0;
+  }
+  
+  .facility-details p {
+    margin: 10px 0;
+  }
+
+ .blank-block {
+    background-color: rgb(230,230,250);
+    width: 400px;
+    height: 450px;
+  }
