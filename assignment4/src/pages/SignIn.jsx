@@ -31,6 +31,7 @@ const SignIn = ({setIsLoggedIn}) => {
           email: formData.email,
           password: hashedPassword,
         }),
+        credentials: "include",
       });
 
       if (!response.ok) {
@@ -40,7 +41,7 @@ const SignIn = ({setIsLoggedIn}) => {
       }
 
       const data = await response.json();
-      setIsLoggedIn(true); // 로그인 상태 변경
+      setIsLoggedIn(true); 
       alert(`Welcome, ${data.name}!`); 
       navigate("/home"); 
     } catch (error) {

@@ -14,7 +14,43 @@ import './App.css';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false); // login state
+  const [userId, setUserId] = useState(null); 
   const [facilities, setFacilities] = useState([]);
+
+  useEffect(() => {
+    const getCookie = (name) => {
+      const value = `; ${document.cookie}`;
+      const parts = value.split(`; ${name}=`);
+      if (parts.length === 2) return parts.pop().split(';').shift();
+    };
+
+    const token = getCookie('authToken'); 
+    if (token) {
+      const fetchUserData = async () => {
+        try {
+          const response = await fetch('http://localhost:8080/user', {
+            method: 'GET',
+            headers: { Authorization: `Bearer ${token}` },
+            credentials: 'include', 
+          });
+
+          if (response.ok) {
+            const data = await response.json();
+            setIsLoggedIn(true);
+            setUserId(data.userId); // save ID 
+          } else {
+            console.error('Failed to fetch user data');
+          }
+        } catch (error) {
+          console.error('Error fetching user data:', error);
+        }
+      };
+
+      fetchUserData();
+    }
+  }, []);
+
+
   useEffect(() => {
     // Fetch facilities data from the backend once on app load
     const getFacilities = async () => {

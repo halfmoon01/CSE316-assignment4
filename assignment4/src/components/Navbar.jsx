@@ -17,11 +17,24 @@ const Navbar = ({isLoggedIn, setIsLoggedIn}) => {
   };
 
   const navigate = useNavigate(); 
-  const handleLogout = () => {
-    setIsLoggedIn(false);
-    localStorage.removeItem("authToken"); 
-    alert("Logged out successfully!");
-    navigate("/home"); 
+  const handleLogout = async () => {
+    try {
+      const response = await fetch('http://localhost:8080/logout', {
+        method: 'POST',
+        credentials: 'include', 
+      });
+  
+      if (response.ok) {
+        alert('Logged out successfully!');
+        setIsLoggedIn(false); 
+        navigate('/home'); 
+      } else {
+        alert('Failed to log out.');
+      }
+    } catch (error) {
+      console.error('Error during logout:', error);
+      alert('An error occurred. Please try again.');
+    }
   };
 
 

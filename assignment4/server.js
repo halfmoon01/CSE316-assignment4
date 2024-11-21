@@ -8,12 +8,17 @@ import cloudinary from 'cloudinary';
 import cors from 'cors';
 import fs from 'fs/promises';
 import path from 'path';
+import jwt from 'jsonwebtoken';
+
 
 dotenv.config(); 
 const app = express(); 
 
+app.use(cors({
+    origin: 'http://localhost:5173',
+    credentials: true, 
+  }));
 
-app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -126,9 +131,52 @@ app.post("/login", async (req, res) => {
         if (password !== user.password) {
             return res.status(401).json({ message: "Wrong Email or wrong password." });
         }
+
+
+        const token = jwt.sign(
+            { userId: user.id, email: user.email }, 
+            process.env.JWT_SECRET,
+            { expiresIn: "1h" } // expire time?
+        );
+
+        res.cookie("authToken", token, {
+            httpOnly: true,
+            secure: false, 
+            sameSite: "Strict", 
+            maxAge: 3600 * 1000, 
+        });
+
         res.status(200).json({ message: "Login successful.", name: user.name });
     });
 });
+
+app.post('/logout', (req, res) => {
+    res.cookie('authToken', '', {
+      httpOnly: true,
+      secure: false, 
+      sameSite: 'Strict',
+      path: '/',
+      maxAge: 0, 
+    });
+    res.status(200).json({ message: 'Logged out successfully.' });
+  });
+  
+
+app.get('/user', (req, res) => {
+    const token = req.headers.authorization?.split(' ')[1];
+    if (!token) {
+        return res.status(401).json({ message: 'Unauthorized' });
+    }
+
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET); 
+        res.status(200).json({ userId: decoded.userId, email: decoded.email });
+    } catch (error) {
+        console.error('Invalid token:', error);
+        res.status(401).json({ message: 'Invalid token' });
+    }
+});
+
 
 // Get every facility data 
 app.get('/facilities', async (req, res) => {
