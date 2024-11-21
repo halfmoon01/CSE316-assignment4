@@ -6,7 +6,8 @@ import dotenv from 'dotenv';
 import mysql from 'mysql2';
 import cloudinary from 'cloudinary';
 import cors from 'cors';
-
+import fs from 'fs/promises';
+import path from 'path';
 
 dotenv.config(); 
 const app = express(); 
@@ -33,12 +34,48 @@ db.connect((err) => {
     console.log('Connected to my database');
 });
 
+
 // Cloudinary configuration
 cloudinary.v2.config({
     cloud_name: process.env.CLOUD_NAME,
     api_key: process.env.CLOUD_API_KEY,
     api_secret: process.env.CLOUD_API_SECRET
 });
+
+// Update the image URL of a facility in the datase to cloudinary fixed URL
+async function updateImageUrl(imageFileName) {
+    // parse facility name from image file name
+    const facilityName = path.parse(imageFileName).name.replace(/_/g, ' '); 
+    const imagePath = path.join(path.resolve(), 'images', imageFileName);
+    try {
+        // upload image to Cloudinary in "facilities" folder
+        const result = await cloudinary.v2.uploader.upload(imagePath, {
+            folder: "facilities",
+            public_id: facilityName.replace(/\s+/g, '_')
+        });
+        const imageUrl = result.secure_url;
+        const updateQuery = `
+            UPDATE facilities
+            SET image_url = ?
+            WHERE name = ?
+        `;
+        await db.promise().query(updateQuery, [imageUrl, facilityName]);
+        console.log(`facility "${facilityName}" URL updated!! `);
+    } catch (error) {
+        console.error(`Failure for facility "${facilityName}":`, error);
+    }
+}
+async function updateImageURL() {
+    try {
+        const files = await fs.readdir(path.join(path.resolve(), 'Images'));
+        for (const f of files) {
+            await updateImageUrl(f);
+        }
+    } catch (error) {
+        console.error("Failed to process images:", error);
+    }
+}
+
 
 app.post("/signup", (req, res) => {
     const { email, password, name } = req.body;
@@ -93,7 +130,17 @@ app.post("/login", async (req, res) => {
     });
 });
 
+// Get every facility data 
+app.get('/api/facilities', async (req, res) => {
+    try {
+        const [rows] = await db.promise().query('SELECT * FROM facilities');
+        res.json(rows);
+    } catch (error) {
+        res.status(500).json({ error: 'Failed getting facilities' });
+    }
+});
 
 app.listen(process.env.PORT, () => {
   console.log(`Server is running on http://localhost:${process.env.PORT}`);
+  updateImageURL();
 });
