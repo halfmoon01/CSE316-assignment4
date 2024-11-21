@@ -9,6 +9,7 @@ import Home from './pages/Home';
 import SignIn from './pages/SignIn';
 import SignUp from './pages/SignUp';
 import FacilityList from './pages/FacilityList';
+import FacilityReservation from './pages/FacilityReservation';
 import './App.css';
 
 function App() {
@@ -18,7 +19,7 @@ function App() {
     // Fetch facilities data from the backend once on app load
     const getFacilities = async () => {
         try {
-            const response = await fetch('http://localhost:8080/api/facilities');
+            const response = await fetch('http://localhost:8080/facilities');
             const data = await response.json();
             setFacilities(data); // Store fetched data using state
         } catch (error) {
@@ -38,6 +39,7 @@ function App() {
           <Route path="/sign-in" element={<SignIn setIsLoggedIn={setIsLoggedIn} />} />
           <Route path="/sign-up" element={<SignUp />} />
           <Route path="/facility-list" element={<FacilityList facilities={facilities} />} />
+          <Route path="/facility-reservation" element={<FacilityReservation facilities={facilities}/>} />
         </Routes>
       </div>
     </Router>

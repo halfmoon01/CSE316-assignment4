@@ -1,0 +1,60 @@
+/*
+Sanghyun Jun
+Sanghyun.Jun.1@stonybrook.edu
+*/
+
+
+.select{
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+}
+.text{
+    width: 97%;
+    padding: 10px;
+    margin-bottom: 15px;
+}
+.textarea{
+    width: 97%;
+    padding: 10px;
+    margin-bottom: 15px;
+}
+.radio{
+    margin-bottom: 15px;
+}
+.reservation-container{
+    padding: 20px;
+}
+.selected-container{
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    margin-bottom: 15px;
+}
+.selected-image{
+    flex: 1 1 auto;
+    max-width: 65%;
+    height: auto;
+    align-items: center;
+    margin-right: 5px;
+    border-radius: 10px;
+}
+
+.selected-details h2 {
+    font-size: clamp(15px, 2vw, 25px);
+    margin: 0;
+  }
+  
+.selected-details p {
+    font-size: clamp(15px, 2vw, 18px);
+    margin: 10px 0;
+  }
+  .reservation-submit{
+    background-color: blue;
+    color: white;
+    padding: 6px 10px; 
+    font-size: 15px; 
+    cursor: pointer;
+    border-radius: 5px;
+}
