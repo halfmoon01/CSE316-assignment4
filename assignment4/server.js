@@ -13,7 +13,6 @@ import jwt from 'jsonwebtoken';
 
 dotenv.config(); 
 const app = express(); 
-
 app.use(cors({
     origin: 'http://localhost:5173',
     credentials: true, 
@@ -124,7 +123,7 @@ app.post("/login", async (req, res) => {
         }
   
         if (results.length === 0) {
-            return res.status(404).json({ message: "Wrong Email or wrong password." });
+            return res.status(401).json({ message: "Wrong Email or wrong password." });
         }
   
         const user = results[0];
@@ -134,13 +133,13 @@ app.post("/login", async (req, res) => {
 
 
         const token = jwt.sign(
-            { userId: user.id, email: user.email }, 
+            {email: user.email }, 
             process.env.JWT_SECRET,
             { expiresIn: "1h" } // expire time?
         );
 
         res.cookie("authToken", token, {
-            httpOnly: true,
+            httpOnly: false,
             secure: false, 
             sameSite: "Strict", 
             maxAge: 3600 * 1000, 
@@ -152,7 +151,7 @@ app.post("/login", async (req, res) => {
 
 app.post('/logout', (req, res) => {
     res.cookie('authToken', '', {
-      httpOnly: true,
+      httpOnly: false,
       secure: false, 
       sameSite: 'Strict',
       path: '/',
@@ -161,21 +160,6 @@ app.post('/logout', (req, res) => {
     res.status(200).json({ message: 'Logged out successfully.' });
   });
   
-
-app.get('/user', (req, res) => {
-    const token = req.headers.authorization?.split(' ')[1];
-    if (!token) {
-        return res.status(401).json({ message: 'Unauthorized' });
-    }
-
-    try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET); 
-        res.status(200).json({ userId: decoded.userId, email: decoded.email });
-    } catch (error) {
-        console.error('Invalid token:', error);
-        res.status(401).json({ message: 'Invalid token' });
-    }
-});
 
 
 // Get every facility data 
@@ -244,3 +228,28 @@ app.get('/reservations', async (req, res) => {
         res.status(500).json({ error: 'Failed to retrieve reservations' });
     }
 });
+
+
+app.get('/user', (req, res) => {
+    const token = req.headers.authorization?.split(' ')[1];
+    if (!token) {
+      return res.status(401).json({ message: "Token is missing." });
+    }
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET); 
+        const userEmail = decoded.email; 
+        const query = "SELECT id, email, name FROM users WHERE email = ?";
+        db.query(query, [userEmail], (err, results) => {
+          if (err) {
+            return res.status(500).json({ message: "Failed to retrieve user info." });
+          }
+    
+          if (results.length === 0) {
+            return res.status(404).json({ message: "User not found." });
+          }
+          res.status(200).json(results[0]); 
+        });
+      } catch (error) {
+        res.status(401).json({ message: "Invalid or expired token." });
+      }
+  });

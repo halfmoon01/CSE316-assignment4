@@ -13,43 +13,32 @@ import FacilityReservation from './pages/FacilityReservation';
 import './App.css';
 
 function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false); // login state
-  const [userId, setUserId] = useState(null); 
+  const [user, setUser] = useState(null);
   const [facilities, setFacilities] = useState([]);
 
   useEffect(() => {
-    const getCookie = (name) => {
-      const value = `; ${document.cookie}`;
-      const parts = value.split(`; ${name}=`);
-      if (parts.length === 2) return parts.pop().split(';').shift();
-    };
-
-    const token = getCookie('authToken'); 
-    if (token) {
-      const fetchUserData = async () => {
+    const checkLoginStatus = async () => {
+      const token = document.cookie.split("; ").find((row) => row.startsWith("authToken="))?.split("=")[1];
         try {
-          const response = await fetch('http://localhost:8080/user', {
-            method: 'GET',
+          const response = await fetch("http://localhost:8080/user", {
+            method: "GET",
             headers: { Authorization: `Bearer ${token}` },
-            credentials: 'include', 
+            credentials: "include",
           });
 
           if (response.ok) {
             const data = await response.json();
-            setIsLoggedIn(true);
-            setUserId(data.userId); // save ID 
+            setUser(data); // set User
           } else {
-            console.error('Failed to fetch user data');
+            console.error("Failed to fetch user info.");
           }
         } catch (error) {
-          console.error('Error fetching user data:', error);
+          console.error("Error during login status check:", error);
         }
-      };
+    };
 
-      fetchUserData();
-    }
-  }, []);
-
+    checkLoginStatus();
+  }, []); // 
 
   useEffect(() => {
     // Fetch facilities data from the backend once on app load
@@ -67,12 +56,12 @@ function App() {
 
   return (
     <Router>
-      <Navbar isLoggedIn = {isLoggedIn} setIsLoggedIn = {setIsLoggedIn} />
+      <Navbar user = {user} setUser={setUser} />
       <div className="container">
       <Routes>
           <Route path="/" element={<Navigate to="/home" replace />} />
           <Route path="/home" element={<Home />} />
-          <Route path="/sign-in" element={<SignIn setIsLoggedIn={setIsLoggedIn} />} />
+          <Route path="/sign-in" element={<SignIn setUser = {setUser} />} />
           <Route path="/sign-up" element={<SignUp />} />
           <Route path="/facility-list" element={<FacilityList facilities={facilities} />} />
           <Route path="/facility-reservation" element={<FacilityReservation facilities={facilities}/>} />

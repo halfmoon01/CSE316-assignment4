@@ -6,7 +6,7 @@ import { Link, useNavigate} from "react-router-dom";
 import { hashutil } from '../../Hashutil';
 
 import './SignIn.css';
-const SignIn = ({setIsLoggedIn}) => {
+const SignIn = ({setUser}) => {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -34,17 +34,17 @@ const SignIn = ({setIsLoggedIn}) => {
         credentials: "include",
       });
 
-      if (!response.ok) {
+      if (response.ok) {
+        const data = await response.json();
+        setUser(data); // 사용자 상태 업데이트
+        alert(`Welcome, ${data.name}!`);
+        navigate("/home");
+      } else {
         const errorData = await response.json();
-        alert(errorData.message);
-        return;
+        alert(errorData.message); // 에러 메시지 표시
       }
-
-      const data = await response.json();
-      setIsLoggedIn(true); 
-      alert(`Welcome, ${data.name}!`); 
-      navigate("/home"); 
     } catch (error) {
+      console.error("Login failed:", error);
       alert("Failed to connect to the server. Please try again.");
     }
 

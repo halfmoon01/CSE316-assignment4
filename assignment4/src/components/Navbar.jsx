@@ -9,7 +9,7 @@ import userIcon from '../AssignImages/user.png';
 import menuIcon from '../AssignImages/menu.png';
 import './Navbar.css';
 
-const Navbar = ({isLoggedIn, setIsLoggedIn}) => {
+const Navbar = ({user, setUser}) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   
   const toggleSidebar = () => {
@@ -26,7 +26,7 @@ const Navbar = ({isLoggedIn, setIsLoggedIn}) => {
   
       if (response.ok) {
         alert('Logged out successfully!');
-        setIsLoggedIn(false); 
+        setUser(null);
         navigate('/home'); 
       } else {
         alert('Failed to log out.');
@@ -63,7 +63,7 @@ const Navbar = ({isLoggedIn, setIsLoggedIn}) => {
                 <Link to="/my-reservation">Reservation History</Link>
               </div>
             </li>
-            {isLoggedIn ? (
+            {user ? (
                 <>
                   <li onClick={handleLogout}>
                     Sign Out
@@ -77,7 +77,7 @@ const Navbar = ({isLoggedIn, setIsLoggedIn}) => {
           </div>
 
           <li className="right-button">
-            {isLoggedIn ? (
+            {user ? (
               <div className = "group">
                 <img src={userIcon} width="30" height="30" alt="User" />
                 <button onClick={handleLogout}>Sign Out</button>
@@ -121,7 +121,7 @@ const Navbar = ({isLoggedIn, setIsLoggedIn}) => {
               <Link to="/my-reservation">Reservation History</Link>
             </div>
           </li>
-          {isLoggedIn ? (
+          {user ? (
                 <>
                   <li onClick={handleLogout}>
                     Sign Out
