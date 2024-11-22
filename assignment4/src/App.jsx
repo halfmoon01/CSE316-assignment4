@@ -10,11 +10,13 @@ import SignIn from './pages/SignIn';
 import SignUp from './pages/SignUp';
 import FacilityList from './pages/FacilityList';
 import FacilityReservation from './pages/FacilityReservation';
+import MyInfo from './pages/MyInfo';
 import './App.css';
 
 function App() {
   const [user, setUser] = useState(null);
   const [facilities, setFacilities] = useState([]);
+
 
   useEffect(() => {
     const checkLoginStatus = async () => {
@@ -28,9 +30,10 @@ function App() {
 
           if (response.ok) {
             const data = await response.json();
-            setUser(data); // set User
+            setUser(data.email); // set User
+            console.log(data.email);
           } else {
-            console.error("Failed to fetch user info.");
+            console.error("Not logged in");
           }
         } catch (error) {
           console.error("Error during login status check:", error);
@@ -65,6 +68,7 @@ function App() {
           <Route path="/sign-up" element={<SignUp />} />
           <Route path="/facility-list" element={<FacilityList facilities={facilities} />} />
           <Route path="/facility-reservation" element={<FacilityReservation facilities={facilities}/>} />
+          <Route path="/my-info" element={<MyInfo />} />
         </Routes>
       </div>
     </Router>

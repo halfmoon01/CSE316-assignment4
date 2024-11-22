@@ -1,0 +1,22 @@
+/*
+Sanghyun Jun
+Sanghyun.Jun.1@stonybrook.edu
+*/
+
+.myInfo {
+    display: flex;
+    flex-direction: column; 
+    align-items: center; 
+    text-align: center; 
+}
+.button_type1{
+    background-color: rgb(230,230,250);
+    padding: 6px 10px; 
+    font-size: 15px; 
+    cursor: pointer;
+    border-radius: 5px;
+}
+.button_type1:hover{
+    background-color: black;
+    color: white;
+}

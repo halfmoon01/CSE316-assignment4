@@ -238,18 +238,47 @@ app.get('/user', (req, res) => {
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET); 
         const userEmail = decoded.email; 
-        const query = "SELECT id, email, name FROM users WHERE email = ?";
-        db.query(query, [userEmail], (err, results) => {
-          if (err) {
-            return res.status(500).json({ message: "Failed to retrieve user info." });
-          }
-    
-          if (results.length === 0) {
-            return res.status(404).json({ message: "User not found." });
-          }
-          res.status(200).json(results[0]); 
-        });
+        res.status(200).json({ email: userEmail }); 
       } catch (error) {
         res.status(401).json({ message: "Invalid or expired token." });
       }
   });
+
+  const authenticateToken = (req, res, next) => {
+    const token = req.headers.authorization?.split(" ")[1]; 
+    if (!token) {
+      return res.status(401).json({ message: "Token is missing." });
+    }
+  
+    try {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET); 
+      req.user = decoded; 
+      next(); 
+    } catch (error) {
+      console.error("Token verification failed:", error.message);
+      res.status(401).json({ message: "Invalid or expired token." });
+    }
+  };
+  
+  app.get('/user-details', authenticateToken, (req, res) => {
+    const userEmail = req.user.email; 
+  
+    if (!userEmail) {
+      return res.status(400).json({ message: "Email is missing in token." });
+    }
+  
+    const query = "SELECT email, name, image_url FROM users WHERE email = ?";
+    db.query(query, [userEmail], (err, results) => {
+      if (err) {
+        console.error("Database query error:", err.message);
+        return res.status(500).json({ message: "Failed to retrieve user info." });
+      }
+  
+      if (results.length === 0) {
+        return res.status(404).json({ message: "User not found." });
+      }
+  
+      res.status(200).json(results[0]);
+    });
+  });
+  
