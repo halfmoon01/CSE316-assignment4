@@ -36,12 +36,13 @@ const SignIn = ({setUser}) => {
 
       if (response.ok) {
         const data = await response.json();
-        setUser(data); // 사용자 상태 업데이트
+        setUser(data); 
         alert(`Welcome, ${data.name}!`);
         navigate("/home");
+        window.location.reload(); 
       } else {
         const errorData = await response.json();
-        alert(errorData.message); // 에러 메시지 표시
+        alert(errorData.message); 
       }
     } catch (error) {
       console.error("Login failed:", error);

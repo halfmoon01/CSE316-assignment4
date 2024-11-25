@@ -2,7 +2,7 @@
 //Sanghyun.Jun.1@stonybrook.edu
 
 
-import React, { useState } from 'react';
+import React, { useState , useEffect} from 'react';
 import { Link, useNavigate} from 'react-router-dom';
 import homeIcon from '../AssignImages/home.png';
 import userIcon from '../AssignImages/user.png';
@@ -11,12 +11,49 @@ import './Navbar.css';
 
 const Navbar = ({user, setUser}) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  
+  const [userInfo , setUserInfo] = useState(null);
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
-
   const navigate = useNavigate(); 
+
+  const fetchUserInfo = async () => {
+    try {
+      const token = document.cookie
+        .split('; ')
+        .find((row) => row.startsWith('authToken='))
+        ?.split('=')[1];
+
+      if (!token) {
+        setUserInfo(null); 
+        return;
+      }
+
+      const response = await fetch('http://localhost:8080/user-details', {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        credentials: 'include',
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setUserInfo(data); 
+      } else {
+        console.error('Failed to fetch user details');
+        setUserInfo(null); 
+      }
+    } catch (error) {
+      console.error('Error fetching user info:', error);
+      setUserInfo(null); 
+    }
+  };
+
+  useEffect(() => {
+    fetchUserInfo();
+  }, []);
+
   const handleLogout = async () => {
     try {
       const response = await fetch('http://localhost:8080/logout', {
@@ -28,6 +65,7 @@ const Navbar = ({user, setUser}) => {
         alert('Logged out successfully!');
         setUser(null);
         navigate('/home'); 
+        window.location.reload();
       } else {
         alert('Failed to log out.');
       }
@@ -79,7 +117,7 @@ const Navbar = ({user, setUser}) => {
           <li className="right-button">
             {user ? (
               <div className = "group">
-                <img src={userIcon} width="30" height="30" alt="User" />
+                <img src={userInfo.image_url || userIcon} className='image' />
                 <button onClick={handleLogout}>Sign Out</button>
               </div>
             ): (

@@ -4,9 +4,43 @@
 import React, { useState } from 'react';
 import Dialog from './Dialog';
 
-const ChangeName = ({ isOpen, onClose }) => {
+const ChangeName = ({ isOpen, onClose}) => {
   // initially just set to an empty string
   const [newName, setNewName] = useState('');
+
+  const handleSave = async () => {
+    if (!newName.trim()) {
+      alert('Name cannot be empty.');
+      return;
+    }
+    try {
+      const token = document.cookie
+        .split('; ')
+        .find((row) => row.startsWith('authToken='))
+        ?.split('=')[1];
+
+      const response = await fetch('http://localhost:8080/change-name', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ newName }),
+      });
+
+      if (response.ok) {
+        alert('Name changed successfully!');
+        window.location.reload();
+        onClose(); 
+      } else {
+        const data = await response.json();
+        alert(data.message || 'Failed to change name.');
+      }
+    } catch (err) {
+      console.error('Error:', err);
+      alert('An error occurred while changing the name.');
+    }
+  };
 
   return (
     //isOpen -> open dialog
@@ -23,14 +57,15 @@ const ChangeName = ({ isOpen, onClose }) => {
               id="newName"
               className="new-input"
               value={newName}
-              onChange={(e) => setNewName(e.target.value)}
+              onChange={(e) => 
+                setNewName(e.target.value)}
                // Update state when input changes
             />
             </div>
           </>
         }
         onClose={onClose}
-        onSave={() => alert('Name change is not currently available.')}
+        onSave={handleSave}
       />
     )
   );

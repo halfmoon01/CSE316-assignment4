@@ -97,6 +97,11 @@ Sanghyun.Jun.1@stonybrook.edu
     align-items: center;
 }
 
+.navbar-large li.right-button .group .image{
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+}
 .navbar-large .center-icons {
     display: flex;
     justify-content: center; 

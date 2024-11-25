@@ -9,6 +9,12 @@ Sanghyun.Jun.1@stonybrook.edu
     align-items: center; 
     text-align: center; 
 }
+
+.myInfo .image{
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+}
 .button_type1{
     background-color: rgb(230,230,250);
     padding: 6px 10px; 
@@ -20,3 +26,6 @@ Sanghyun.Jun.1@stonybrook.edu
     background-color: black;
     color: white;
 }
+
+
+

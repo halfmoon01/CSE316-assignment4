@@ -11,7 +11,7 @@ import ChangeImage from '../dialog/ChangeImage'
 import ChangeName from '../dialog/ChangeName'
 
 
-const UserInfo = ({user, setUser}) => {
+const UserInfo = () => {
   const navigate = useNavigate();
   const [userInfo, setUserInfo] = useState(null);
   
@@ -20,51 +20,46 @@ const UserInfo = ({user, setUser}) => {
     const [isPwdOpen, setIsPwdOpen] = useState(false);
     const [isNameOpen, setIsNameOpen] = useState(false);
     const alertShown = useRef(false); 
+
+    const fetchUserInfo = async () => {
+      const token = document.cookie
+        .split("; ")
+        .find((row) => row.startsWith("authToken="))
+        ?.split("=")[1];
+
+      if (!token) {
+        if (!alertShown.current) {
+          alert("You need to login to view this page.");
+          alertShown.current = true; 
+        }
+        navigate("/home");
+        return; 
+      }
+
+      try {
+        const response = await fetch("http://localhost:8080/user-details", {
+          method: "GET",
+          headers: { Authorization: `Bearer ${token}` },
+          credentials: "include", 
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setUserInfo(data); 
+        }else {
+          throw new Error("Failed to fetch user details.");
+        }
+      }catch (error) {
+        console.error("Error fetching user details:", error);
+        if (!alertShown.current) {
+          alert("Invalid or expired token. Redirecting to login page.2");
+          alertShown.current = true;
+        }
+        navigate("/home");
+      }
+    };
+    
     useEffect(() => {
-      const fetchUserInfo = async () => {
-        const token = document.cookie
-          .split("; ")
-          .find((row) => row.startsWith("authToken="))
-          ?.split("=")[1];
-  
-        if (!token) {
-          if (!alertShown.current) {
-            alert("You need to login to view this page.");
-            alertShown.current = true; 
-          }
-          navigate("/home");
-          return; 
-        }
-  
-        try {
-          const response = await fetch("http://localhost:8080/user-details", {
-            method: "GET",
-            headers: { Authorization: `Bearer ${token}` },
-            credentials: "include", 
-          });
-  
-          if (response.ok) {
-            const data = await response.json();
-            setUserInfo(data); 
-          } else if (response.status === 401) {
-            if (!alertShown.current) {
-              alert("Invalid or expired token. Redirecting to login page.");
-              alertShown.current = true;
-            }
-            navigate("/home");
-          } else {
-            throw new Error("Failed to fetch user details.");
-          }
-        } catch (error) {
-          console.error("Error fetching user details:", error);
-          if (!alertShown.current) {
-            alert("Invalid or expired token. Redirecting to login page.");
-            alertShown.current = true;
-          }
-          navigate("/home");
-        }
-      };
-  
       fetchUserInfo(); 
     }, [navigate]); 
   
@@ -77,8 +72,7 @@ const UserInfo = ({user, setUser}) => {
       <h1>User Information</h1>
       <figure>
         <div>
-          <img src={userIcon}
-           width="150" height="150" alt="User" />
+          <img src={userInfo.image_url || userIcon} className='image'/>
         </div>
       </figure>
       <button className="button_type1" type="button" onClick={() => setIsImageOpen(true)}>
@@ -98,12 +92,19 @@ const UserInfo = ({user, setUser}) => {
         </button>
       </p>
       {/* Dialog components for changing image, password, and name */}
-      <ChangeImage isOpen={isImageOpen} onClose=
-        {() => setIsImageOpen(false)} />
-      <ChangePwd isOpen={isPwdOpen} onClose=
-        {() => setIsPwdOpen(false)} />
-      <ChangeName isOpen={isNameOpen} onClose=
-        {() => setIsNameOpen(false)} />
+      <ChangeImage 
+        isOpen={isImageOpen} 
+        onClose={() => setIsImageOpen(false)} 
+      />
+
+      <ChangePwd 
+        isOpen={isPwdOpen} 
+        onClose={() => setIsPwdOpen(false)} 
+        />
+      <ChangeName 
+        isOpen={isNameOpen} 
+        onClose={() => setIsNameOpen(false)} 
+      />
         
     </div>
   );

@@ -9,7 +9,7 @@ import cors from 'cors';
 import fs from 'fs/promises';
 import path from 'path';
 import jwt from 'jsonwebtoken';
-
+import { hashutil } from './Hashutil.js';
 
 dotenv.config(); 
 const app = express(); 
@@ -240,6 +240,7 @@ app.get('/user', (req, res) => {
         const userEmail = decoded.email; 
         res.status(200).json({ email: userEmail }); 
       } catch (error) {
+
         res.status(401).json({ message: "Invalid or expired token." });
       }
   });
@@ -281,4 +282,82 @@ app.get('/user', (req, res) => {
       res.status(200).json(results[0]);
     });
   });
+  
+
+app.post('/change-password', authenticateToken, async (req, res) => {
+    const { newPassword } = req.body;
+  
+    if (!newPassword) {
+      return res.status(400).json({ message: 'Enter your password' });
+    }
+  
+    try {
+        const userEmail = req.user.email; 
+        const hashedPassword = hashutil(userEmail, newPassword);
+        const query = 'UPDATE users SET password = ? WHERE email = ?';
+        db.query(query, [hashedPassword, userEmail], (err) => {
+        if (err) {
+          console.error('Database query error:', err);
+          return res.status(500).json({ message: 'Failed to update password.' });
+        }
+        res.status(200).json({ message: 'Password changed successfully.' });
+        });
+    } catch (error) {
+      console.error('Error hashing password:', error);
+      res.status(500).json({ message: 'An error occurred.' });
+    }
+  });
+  
+
+  app.post('/change-name', authenticateToken, (req, res) => {
+    const { newName } = req.body;
+  
+    if (!newName || newName.trim() === '') {
+      return res.status(400).json({ message: 'Name cannot be empty.' });
+    }
+  
+    const userEmail = req.user.email;
+    const query = 'UPDATE users SET name = ? WHERE email = ?';
+  
+    db.query(query, [newName, userEmail], (err) => {
+      if (err) {
+        console.error('Database query error:', err);
+        return res.status(500).json({ message: 'Failed to update name.' });
+      }
+  
+      res.status(200).json({ message: 'Name updated successfully.' });
+    });
+  });
+
+  app.post('/change-image', authenticateToken, async (req, res) => {
+    try {
+      const { image } = req.body; // Base64 이미지 데이터
+      const userEmail = req.user.email;
+  
+      if (!image) {
+        return res.status(400).json({ message: 'Image is required.' });
+      }
+  
+      // Cloudinary에 이미지 업로드
+      const uploadResponse = await cloudinary.uploader.upload(image, {
+        folder: 'user_images',
+        public_id: `user_${userEmail}`,
+      });
+  
+      // 반환된 URL을 DB에 저장
+      const query = 'UPDATE users SET image_url = ? WHERE email = ?';
+      db.query(query, [uploadResponse.secure_url, userEmail], (err) => {
+        if (err) {
+          console.error('Database query error:', err);
+          return res.status(500).json({ message: 'Failed to update image URL in the database.' });
+        }
+  
+        res.status(200).json({ message: 'Image updated successfully.', imageUrl: uploadResponse.secure_url });
+      });
+    } catch (error) {
+      console.error('Cloudinary upload error:', error);
+      res.status(500).json({ message: 'Failed to upload image to Cloudinary.' });
+    }
+  });
+  
   
