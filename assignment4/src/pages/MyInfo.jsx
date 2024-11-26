@@ -32,7 +32,7 @@ const UserInfo = () => {
           alert("You need to login to view this page.");
           alertShown.current = true; 
         }
-        navigate("/home");
+        navigate("/sign-in");
         return; 
       }
 
@@ -99,7 +99,8 @@ const UserInfo = () => {
 
       <ChangePwd 
         isOpen={isPwdOpen} 
-        onClose={() => setIsPwdOpen(false)} 
+        onClose={() => setIsPwdOpen(false)}
+        email = {userInfo.email}
         />
       <ChangeName 
         isOpen={isNameOpen} 

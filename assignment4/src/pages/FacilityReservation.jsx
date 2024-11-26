@@ -1,8 +1,9 @@
 //Sanghyun Jun
 //Sanghyun.Jun.1@stonybrook.edu
 
-import React, { useState , useEffect} from "react";
+import React, { useState , useEffect, useRef} from "react";
 import axios from 'axios'
+import {useNavigate} from 'react-router-dom';
 import Calendar from '@mui/icons-material/CalendarToday'; 
 import People from '@mui/icons-material/People';
 import Location from '@mui/icons-material/LocationOn';
@@ -11,6 +12,8 @@ import "./FacilityReservation.css";
 
 function FacilityReservation({user, facilities}) { // Accept facilities from "App.jsx"
   const [userInfo , setUserInfo] = useState(null);
+  const alertShown = useRef(false); 
+  const navigate = useNavigate();
   const fetchUserInfo = async () => {
     try {
       const token = document.cookie
@@ -18,10 +21,15 @@ function FacilityReservation({user, facilities}) { // Accept facilities from "Ap
         .find((row) => row.startsWith('authToken='))
         ?.split('=')[1];
 
-      if (!token) {
-        setUserInfo(null); 
-        return;
-      }
+        if (!token) {
+          setUserInfo(null);
+          if (!alertShown.current) {
+            alert("You need to login to view this page.");
+            alertShown.current = true; 
+          }
+          navigate("/sign-in");
+          return; 
+        }
 
       const response = await fetch('http://localhost:8080/user-details', {
         method: 'GET',

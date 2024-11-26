@@ -3,18 +3,20 @@
 
 import React, { useState } from 'react';
 import Dialog from './Dialog';
+import { hashutil } from '../../Hashutil.js';
 
-const ChangePwd = ({ isOpen, onClose }) => {
 
+const ChangePwd = ({ isOpen, onClose , email}) => {
+  const [oldPassword,setOldPassword] = useState(' ');
   const [newPassword, setNewPassword] = useState('');
-
   const handleSave = async () => {
-    if (!newPassword) {
-      alert('Password must be at least 6 characters long.');
+    if (!newPassword || !oldPassword) {
+      alert('Enter valid password');
       return;
     }
-
     try {
+      const hashedOldPassword = hashutil(email, oldPassword);
+      const hashedNewPassword = hashutil(email, newPassword);
       const token = document.cookie
         .split('; ')
         .find((row) => row.startsWith('authToken='))
@@ -26,7 +28,7 @@ const ChangePwd = ({ isOpen, onClose }) => {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ newPassword }),
+        body: JSON.stringify({ oldPassword: hashedOldPassword, newPassword: hashedNewPassword }),
       });
 
       if (response.ok) {
@@ -48,6 +50,19 @@ const ChangePwd = ({ isOpen, onClose }) => {
         title="Change your password"
         content={
           <>
+            <label htmlFor="oldPassword">Old Password</label><br />
+            <div className="line2">
+            <input
+              type="password"
+              placeholder="Enter your original password"
+              id="oldPassword"
+              className="new-input"
+              value={oldPassword}
+              onChange={(e) => 
+                setOldPassword(e.target.value)
+              }
+            />
+            </div>
             <label htmlFor="newPassword">New Password</label><br />
             <div className="line2">
             <input

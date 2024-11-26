@@ -1,14 +1,35 @@
 // Sanghyun Jun
 // Sanghyun.Jun.1@stonybrook.edu
 
-import React from "react";
+import React, {useEffect, useRef} from "react";
+import { useNavigate } from "react-router-dom";
 import "./FacilityList.css"; 
 import Calendar from '@mui/icons-material/CalendarToday'; 
 import People from '@mui/icons-material/People';
 import Location from '@mui/icons-material/LocationOn';
 import Available from '@mui/icons-material/Accessibility';
-
 const FacilityList = ({ facilities }) => {
+  const alertShown = useRef(false); 
+  const navigate = useNavigate();
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      const token = document.cookie
+        .split("; ")
+        .find((row) => row.startsWith("authToken="))
+        ?.split("=")[1];
+
+      if (!token) {
+        if (!alertShown.current) {
+          alert("You need to login to view this page.");
+          alertShown.current = true; 
+        }
+        navigate("/sign-in");
+        return; 
+      }
+    };
+    fetchUserInfo();
+  },[navigate]);
+
   return (
     <div className="facility-list">
       {/* Map over the facilities array and render each item */}

@@ -9,12 +9,11 @@ import cors from 'cors';
 import fs from 'fs/promises';
 import path from 'path';
 import jwt from 'jsonwebtoken';
-import { hashutil } from './Hashutil.js';
 
 dotenv.config(); 
 const app = express(); 
 app.use(cors({
-    origin: 'http://localhost:5173',
+    origin: '*',
     credentials: true, 
   }));
 
@@ -38,6 +37,26 @@ db.connect((err) => {
     console.log('Connected to my database');
 });
 
+
+// SQL to create the users table if it does not already exist
+const createTableQuery = `
+  CREATE TABLE IF NOT EXISTS users (
+    Id INT AUTO_INCREMENT PRIMARY KEY,
+    email VARCHAR(255) NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    name VARCHAR(100) NOT NULL,
+    image_url VARCHAR(255)
+  );
+`;
+
+// Run the query to create the table
+db.query(createTableQuery, (err, result) => {
+  if (err) {
+    console.error('Error creating table:', err);
+  } else {
+    console.log('Users table created or already exists');
+  }
+});
 
 // Cloudinary configuration
 cloudinary.v2.config({
@@ -72,6 +91,7 @@ async function updateImageUrl(imageFileName) {
 async function updateImageURL() {
     try {
         const files = await fs.readdir(path.join(path.resolve(), 'Images'));
+        console.log("Updating facilty images...");
         for (const f of files) {
             await updateImageUrl(f);
         }
@@ -304,22 +324,42 @@ app.get('/user', (req, res) => {
   
 
 app.post('/change-password', authenticateToken, async (req, res) => {
-    const { newPassword } = req.body;
+    const { oldPassword, newPassword } = req.body;
   
-    if (!newPassword) {
+    if (!newPassword || !newPassword) {
       return res.status(400).json({ message: 'Enter your password' });
     }
   
     try {
         const userEmail = req.user.email; 
-        const hashedPassword = hashutil(userEmail, newPassword);
-        const query = 'UPDATE users SET password = ? WHERE email = ?';
-        db.query(query, [hashedPassword, userEmail], (err) => {
-        if (err) {
-          console.error('Database query error:', err);
-          return res.status(500).json({ message: 'Failed to update password.' });
-        }
-        res.status(200).json({ message: 'Password changed successfully.' });
+        
+         // Retrieve the stored hashed password for the user from the database
+         const query = 'SELECT password FROM users WHERE email = ?';
+         db.query(query, [userEmail], async (err, result) => {
+             if (err) {
+                 console.error('Database query error:', err);
+                 return res.status(500).json({ message: 'Failed to retrieve user data.' });
+             }
+ 
+             if (result.length === 0) {
+                 return res.status(404).json({ message: 'User not found.' });
+             }
+ 
+             const storedHashedPassword = result[0].password;
+             console.log(storedHashedPassword);
+             // Compare the provided old password with the stored hashed password (no need to hash oldPassword again)
+             if (oldPassword !== storedHashedPassword) {
+                 return res.status(400).json({ message: 'Incorrect old password.' });
+             }
+            
+             const updatequery = 'UPDATE users SET password = ? WHERE email = ?';
+            db.query(updatequery, [newPassword, userEmail], (err) => {
+              if (err) {
+                console.error('Database query error:', err);
+                return res.status(500).json({ message: 'Failed to update password.' });
+              }
+              res.status(200).json({ message: 'Password changed successfully.' });
+            });
         });
     } catch (error) {
       console.error('Error hashing password:', error);

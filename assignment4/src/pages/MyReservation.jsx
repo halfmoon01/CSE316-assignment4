@@ -25,7 +25,7 @@ function MyReservation({ user, facilities }) {
           alert("You need to login to view this page.");
           alertShown.current = true; 
         }
-        navigate("/home");
+        navigate("/sign-in");
         return; 
       }
     };

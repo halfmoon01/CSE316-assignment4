@@ -11,7 +11,7 @@ import './Navbar.css';
 
 const Navbar = ({user, setUser}) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [userInfo , setUserInfo] = useState({});
+  const [userInfo , setUserInfo] = useState(null);
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
@@ -117,7 +117,7 @@ const Navbar = ({user, setUser}) => {
           <li className="right-button">
             {user ? (
               <div className = "group">
-                <img src={userInfo.image_url || userIcon} className='image' />
+                <img src={userInfo?.image_url || userIcon} className='image' />
                 <button onClick={handleLogout}>Sign Out</button>
               </div>
             ): (

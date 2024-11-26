@@ -22,7 +22,12 @@ function App() {
   useEffect(() => {
     const checkLoginStatus = async () => {
       const token = document.cookie.split("; ").find((row) => row.startsWith("authToken="))?.split("=")[1];
-        try {
+      if(!token){
+        console.log("NOT LOGGED IN");
+        return;
+      }
+      console.log("LOGGED IN");  
+      try {
           const response = await fetch("http://localhost:8080/user", {
             method: "GET",
             headers: { Authorization: `Bearer ${token}` },
