@@ -11,6 +11,7 @@ import SignUp from './pages/SignUp';
 import FacilityList from './pages/FacilityList';
 import FacilityReservation from './pages/FacilityReservation';
 import MyInfo from './pages/MyInfo';
+import MyReservation from './pages/MyReservation';
 import './App.css';
 
 function App() {
@@ -33,7 +34,7 @@ function App() {
             setUser(data.email); // set User
             console.log(data.email);
           } else {
-            console.error("Not logged in");
+            console.log("Not logged in");
           }
         } catch (error) {
           console.error("Error during login status check:", error);
@@ -67,8 +68,9 @@ function App() {
           <Route path="/sign-in" element={<SignIn setUser = {setUser} />} />
           <Route path="/sign-up" element={<SignUp />} />
           <Route path="/facility-list" element={<FacilityList facilities={facilities} />} />
-          <Route path="/facility-reservation" element={<FacilityReservation facilities={facilities}/>} />
+          <Route path="/facility-reservation" element={<FacilityReservation user = {user} facilities={facilities}/>} />
           <Route path="/my-info" element={<MyInfo />} />
+          <Route path="/my-reservation" element={<MyReservation user = {user} facilities={facilities} />} />
         </Routes>
       </div>
     </Router>

@@ -11,7 +11,7 @@ import './Navbar.css';
 
 const Navbar = ({user, setUser}) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [userInfo , setUserInfo] = useState(null);
+  const [userInfo , setUserInfo] = useState({});
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };

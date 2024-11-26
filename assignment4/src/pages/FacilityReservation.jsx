@@ -9,7 +9,45 @@ import Location from '@mui/icons-material/LocationOn';
 import Available from '@mui/icons-material/Accessibility';
 import "./FacilityReservation.css";
 
-function FacilityReservation({facilities}) { // Accept facilities from "App.jsx"
+function FacilityReservation({user, facilities}) { // Accept facilities from "App.jsx"
+  const [userInfo , setUserInfo] = useState(null);
+  const fetchUserInfo = async () => {
+    try {
+      const token = document.cookie
+        .split('; ')
+        .find((row) => row.startsWith('authToken='))
+        ?.split('=')[1];
+
+      if (!token) {
+        setUserInfo(null); 
+        return;
+      }
+
+      const response = await fetch('http://localhost:8080/user-details', {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        credentials: 'include',
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setUserInfo(data); 
+      } else {
+        console.error('Failed to fetch user details');
+        setUserInfo(null); 
+      }
+    } catch (error) {
+      console.error('Error fetching user info:', error);
+      setUserInfo(null); 
+    }
+  };
+
+  useEffect(() => {
+    fetchUserInfo();
+  }, []);
+
     const [reservations, setReservations] = useState([]); 
     const [selectedFacility, setSelectedFacility] = useState(null); 
     const [formData, setFormData] = useState({
@@ -125,7 +163,7 @@ function FacilityReservation({facilities}) { // Accept facilities from "App.jsx"
         reservation_date: formData.date,
         user_number: formData.people,
         purpose: formData.purpose,
-        user_name:"Sanghyun Jun"
+        user_name: userInfo.name
       };
   
       try {

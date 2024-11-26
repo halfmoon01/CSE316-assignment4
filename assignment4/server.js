@@ -229,6 +229,25 @@ app.get('/reservations', async (req, res) => {
     }
 });
 
+// delete a reservation by id 
+app.delete('/reservations/:reservation_id', async (req, res) => {
+  const { reservation_id } = req.params;
+  const deleteQuery = `DELETE FROM reservations WHERE id = ?`;
+
+  try {
+    const [result] = await db.promise().query(deleteQuery, [reservation_id]);
+    // see if connection works
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: "Reservation not found" });
+    }
+
+    res.status(200).json({ message: "Reservation deleted successfully" });
+  } catch (error) {
+    console.error("Failed to delete reservation:", error);
+    res.status(500).json({ error: "Failed to delete reservation" });
+  }
+});
+
 
 app.get('/user', (req, res) => {
     const token = req.headers.authorization?.split(' ')[1];

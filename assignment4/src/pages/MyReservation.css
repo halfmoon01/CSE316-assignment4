@@ -1,0 +1,45 @@
+/*
+Sanghyun Jun
+Sanghyun.Jun.1@stonybrook.edu
+*/
+.list-container{
+    background-color: white;
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    padding: 20px; 
+    margin: 20px 20px;
+    border-radius: 15px;
+}
+
+.list-image{
+    flex: 1 1 auto;
+    max-width: 65%;
+    height: auto;
+    margin-right: 20px;
+    border-radius: 10px;
+}
+
+.list-detail{
+    min-width: 500px;
+}
+
+.list-detail h2 {
+    font-size: clamp(15px, 2vw, 25px);
+    margin: 0;
+  }
+  
+.list-detail p {
+    font-size: clamp(12px, 2vw, 18px);
+    margin: 10px 0;
+  }
+
+.cancel-button{
+    background-color: white;
+    color: red;
+    border: 2px solid red;
+    padding: 6px 10px; 
+    font-size: 15px; 
+    cursor: pointer;
+    border-radius: 5px;
+}
