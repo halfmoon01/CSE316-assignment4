@@ -2,7 +2,7 @@
 //Sanghyun.Jun.1@stonybrook.edu
 
 import React, { useState } from 'react';
-import Dialog from './Dialog';
+import Dialog2 from './Dialog_Image';
 
 const ChangeImage = ({isOpen, onClose}) => {
   const [selectedFile, setSelectedFile] = useState('No file chosen');
@@ -12,7 +12,7 @@ const ChangeImage = ({isOpen, onClose}) => {
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        setSelectedFile(reader.result); // Base64 이미지 데이터
+        setSelectedFile(reader.result); 
       };
       reader.readAsDataURL(file);
     }
@@ -57,7 +57,7 @@ const ChangeImage = ({isOpen, onClose}) => {
   return (
     //isOpen -> open dialog
     isOpen && (
-      <Dialog
+      <Dialog2
         title="Change your image"
         content={
           <>

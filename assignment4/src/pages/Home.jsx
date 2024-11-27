@@ -25,6 +25,10 @@ const Home = () => {
           <li>If all conditions are met, data is stored in the database</li>
         </ul>
         <li>User</li>
+        <ul className="sub-list">
+          <li>Show user information.</li>
+          <li>List reservation histories. </li>
+        </ul>
       </ul>
     </div>
   );
