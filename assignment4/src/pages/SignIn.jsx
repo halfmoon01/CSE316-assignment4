@@ -31,18 +31,18 @@ const SignIn = ({setUser}) => {
           email: formData.email,
           password: hashedPassword,
         }),
-        credentials: "include",
       });
 
       if (response.ok) {
         const data = await response.json();
+        localStorage.setItem("accessToken", data.accessToken); 
         setUser(data); 
         alert(`Welcome, ${data.name}!`);
         navigate("/home");
         window.location.reload(); 
       } else {
         const errorData = await response.json();
-        alert(errorData.message); 
+        alert(errorData.message || "Login failed. Please try again."); 
       }
     } catch (error) {
       console.error("Login failed:", error);

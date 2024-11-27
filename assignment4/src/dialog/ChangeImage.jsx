@@ -25,10 +25,7 @@ const ChangeImage = ({isOpen, onClose}) => {
     }
 
     try {
-      const token = document.cookie
-        .split('; ')
-        .find((row) => row.startsWith('authToken='))
-        ?.split('=')[1];
+      const token = localStorage.getItem('accessToken');
 
       const response = await fetch('http://localhost:8080/change-image', {
         method: 'POST',

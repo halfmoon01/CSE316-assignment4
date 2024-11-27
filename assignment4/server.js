@@ -37,33 +37,17 @@ db.connect((err) => {
     console.log('Connected to my database');
 });
 
-
-// SQL to create the users table if it does not already exist
-const createTableQuery = `
-  CREATE TABLE IF NOT EXISTS users (
-    Id INT AUTO_INCREMENT PRIMARY KEY,
-    email VARCHAR(255) NOT NULL,
-    password VARCHAR(255) NOT NULL,
-    name VARCHAR(100) NOT NULL,
-    image_url VARCHAR(255)
-  );
-`;
-
-// Run the query to create the table
-db.query(createTableQuery, (err, result) => {
-  if (err) {
-    console.error('Error creating table:', err);
-  } else {
-    console.log('Users table created or already exists');
-  }
-});
-
 // Cloudinary configuration
 cloudinary.v2.config({
     cloud_name: process.env.CLOUD_NAME,
     api_key: process.env.CLOUD_API_KEY,
     api_secret: process.env.CLOUD_API_SECRET
 });
+
+// Generate JWT
+const generateAccessToken = (email) => {
+  return jwt.sign({ email }, process.env.JWT_SECRET, { expiresIn: "1h" });
+};
 
 // Update the image URL of a facility in the datase to cloudinary fixed URL
 async function updateImageUrl(imageFileName) {
@@ -119,7 +103,7 @@ app.post("/signup", (req, res) => {
         }
 
         const query = "INSERT INTO users (email, password, name) VALUES (?, ?, ?)";
-        db.query(query, [email, password, name], (err, result) => {
+        db.query(query, [email, password, name], (err) => {
         if (err) {
             return res.status(500).json({ message: "Failed to create user." });
         }
@@ -152,31 +136,17 @@ app.post("/login", async (req, res) => {
         }
 
 
-        const token = jwt.sign(
-            {email: user.email }, 
-            process.env.JWT_SECRET,
-            { expiresIn: "1h" } // expire time?
-        );
+        const token = generateAccessToken(user.email);
 
-        res.cookie("authToken", token, {
-            httpOnly: false,
-            secure: false, 
-            sameSite: "Strict", 
-            maxAge: 3600 * 1000, 
-        });
-
-        res.status(200).json({ message: "Login successful.", name: user.name });
+        res.status(200).json({
+          message: "Login successful.",
+          accessToken: token,
+          name: user.name,
+      });
     });
 });
 
 app.post('/logout', (req, res) => {
-    res.cookie('authToken', '', {
-      httpOnly: false,
-      secure: false, 
-      sameSite: 'Strict',
-      path: '/',
-      maxAge: 0, 
-    });
     res.status(200).json({ message: 'Logged out successfully.' });
   });
   
@@ -346,7 +316,6 @@ app.post('/change-password', authenticateToken, async (req, res) => {
              }
  
              const storedHashedPassword = result[0].password;
-             console.log(storedHashedPassword);
              // Compare the provided old password with the stored hashed password (no need to hash oldPassword again)
              if (oldPassword !== storedHashedPassword) {
                  return res.status(400).json({ message: 'Incorrect old password.' });

@@ -13,11 +13,7 @@ const FacilityList = ({ facilities }) => {
   const navigate = useNavigate();
   useEffect(() => {
     const fetchUserInfo = async () => {
-      const token = document.cookie
-        .split("; ")
-        .find((row) => row.startsWith("authToken="))
-        ?.split("=")[1];
-
+      const token = localStorage.getItem("accessToken");
       if (!token) {
         if (!alertShown.current) {
           alert("You need to login to view this page.");

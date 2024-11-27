@@ -21,7 +21,7 @@ function App() {
 
   useEffect(() => {
     const checkLoginStatus = async () => {
-      const token = document.cookie.split("; ").find((row) => row.startsWith("authToken="))?.split("=")[1];
+      const token = localStorage.getItem("accessToken");
       if(!token){
         console.log("NOT LOGGED IN");
         return;
@@ -31,7 +31,6 @@ function App() {
           const response = await fetch("http://localhost:8080/user", {
             method: "GET",
             headers: { Authorization: `Bearer ${token}` },
-            credentials: "include",
           });
 
           if (response.ok) {
@@ -40,6 +39,7 @@ function App() {
             console.log(data.email);
           } else {
             console.log("Not logged in");
+            localStorage.removeItem("accessToken");
           }
         } catch (error) {
           console.error("Error during login status check:", error);

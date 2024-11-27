@@ -19,10 +19,7 @@ const Navbar = ({user, setUser}) => {
 
   const fetchUserInfo = async () => {
     try {
-      const token = document.cookie
-        .split('; ')
-        .find((row) => row.startsWith('authToken='))
-        ?.split('=')[1];
+      const token = localStorage.getItem("accessToken");
 
       if (!token) {
         setUserInfo(null); 
@@ -34,7 +31,6 @@ const Navbar = ({user, setUser}) => {
         headers: {
           Authorization: `Bearer ${token}`,
         },
-        credentials: 'include',
       });
 
       if (response.ok) {
@@ -43,6 +39,7 @@ const Navbar = ({user, setUser}) => {
       } else {
         console.error('Failed to fetch user details');
         setUserInfo(null); 
+        localStorage.removeItem("accessToken");
       }
     } catch (error) {
       console.error('Error fetching user info:', error);
@@ -56,22 +53,13 @@ const Navbar = ({user, setUser}) => {
 
   const handleLogout = async () => {
     try {
-      const response = await fetch('http://localhost:8080/logout', {
-        method: 'POST',
-        credentials: 'include', 
-      });
-  
-      if (response.ok) {
-        alert('Logged out successfully!');
-        setUser(null);
-        navigate('/home'); 
-        window.location.reload();
-      } else {
-        alert('Failed to log out.');
-      }
+      localStorage.removeItem("accessToken");
+      setUser(null);
+      alert("Logged out successfully!");
+      navigate("/home");
     } catch (error) {
-      console.error('Error during logout:', error);
-      alert('An error occurred. Please try again.');
+      console.error("Error during logout:", error);
+      alert("An error occurred. Please try again.");
     }
   };
 

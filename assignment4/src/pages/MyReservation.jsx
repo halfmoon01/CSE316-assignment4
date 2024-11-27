@@ -1,3 +1,7 @@
+//Sanghyun Jun
+//Sanghyun.Jun.1@stonybrook.edu
+
+
 import React, { useEffect, useState, useRef } from 'react';
 import {useNavigate} from 'react-router-dom';
 import axios from 'axios';
@@ -15,10 +19,7 @@ function MyReservation({ user, facilities }) {
   const navigate = useNavigate();
   useEffect(() => {
     const fetchUserInfo = async () => {
-      const token = document.cookie
-        .split("; ")
-        .find((row) => row.startsWith("authToken="))
-        ?.split("=")[1];
+      const token = localStorage.getItem("accessToken");
 
       if (!token) {
         if (!alertShown.current) {
@@ -80,6 +81,8 @@ function MyReservation({ user, facilities }) {
               <img 
                 src={reservation.facility_image}
                 alt={reservation.reservation_name} 
+    
+    
                 className="list-image" 
               />
               <div className="list-detail">

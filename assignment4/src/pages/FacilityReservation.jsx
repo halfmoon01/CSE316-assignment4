@@ -16,11 +16,7 @@ function FacilityReservation({user, facilities}) { // Accept facilities from "Ap
   const navigate = useNavigate();
   const fetchUserInfo = async () => {
     try {
-      const token = document.cookie
-        .split('; ')
-        .find((row) => row.startsWith('authToken='))
-        ?.split('=')[1];
-
+      const token = localStorage.getItem("accessToken");
         if (!token) {
           setUserInfo(null);
           if (!alertShown.current) {
@@ -36,7 +32,6 @@ function FacilityReservation({user, facilities}) { // Accept facilities from "Ap
         headers: {
           Authorization: `Bearer ${token}`,
         },
-        credentials: 'include',
       });
 
       if (response.ok) {
@@ -45,6 +40,7 @@ function FacilityReservation({user, facilities}) { // Accept facilities from "Ap
       } else {
         console.error('Failed to fetch user details');
         setUserInfo(null); 
+        localStorage.removeItem("accessToken"); 
       }
     } catch (error) {
       console.error('Error fetching user info:', error);
