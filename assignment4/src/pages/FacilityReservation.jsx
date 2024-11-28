@@ -11,40 +11,75 @@ import Available from '@mui/icons-material/Accessibility';
 import "./FacilityReservation.css";
 
 function FacilityReservation({user, facilities}) { // Accept facilities from "App.jsx"
-  const [userInfo , setUserInfo] = useState(null);
   const alertShown = useRef(false); 
   const navigate = useNavigate();
+
+  const [userInfo , setUserInfo] = useState(null);
   const fetchUserInfo = async () => {
     try {
-      const token = localStorage.getItem("accessToken");
-        if (!token) {
-          setUserInfo(null);
-          if (!alertShown.current) {
-            alert("You need to login to view this page.");
-            alertShown.current = true; 
-          }
-          navigate("/sign-in");
-          return; 
-        }
+      let token = localStorage.getItem("accessToken");
 
-      const response = await fetch('http://localhost:8080/user-details', {
-        method: 'GET',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+      if (!token) {
+        setUserInfo(null);
+        if (!alertShown.current) {
+          alert("You need to login to view this page.");
+          alertShown.current = true;
+        }
+        navigate("/sign-in");
+        return;
+      }
+
+      let response = await fetch("http://localhost:8080/user-details", {
+        method: "GET",
+        headers: { Authorization: `Bearer ${token}` },
+        credentials: "include",
       });
 
       if (response.ok) {
         const data = await response.json();
-        setUserInfo(data); 
+        setUserInfo(data);
+      } else if (response.status === 401) {
+        console.log("Token expired. Attempting to refresh...");
+        const refreshResponse = await fetch("http://localhost:8080/refresh", {
+          method: "POST",
+          credentials: "include",
+        });
+
+        if (refreshResponse.ok) {
+          const refreshData = await refreshResponse.json();
+          localStorage.setItem("accessToken", refreshData.accessToken);
+
+          // 재시도
+          response = await fetch("http://localhost:8080/user-details", {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${refreshData.accessToken}`,
+            },
+            credentials: "include",
+          });
+
+          if (response.ok) {
+            console.log("Refresh Success!");
+            const data = await response.json();
+            setUserInfo(data);
+          } else {
+            throw new Error("Failed to fetch user info after refreshing token.");
+          }
+        } else {
+          throw new Error("Refresh token invalid or expired.");
+        }
       } else {
-        console.error('Failed to fetch user details');
-        setUserInfo(null); 
-        localStorage.removeItem("accessToken"); 
+        throw new Error("Failed to fetch user details.");
       }
     } catch (error) {
-      console.error('Error fetching user info:', error);
-      setUserInfo(null); 
+      console.error("Error fetching user info:", error);
+      setUserInfo(null);
+      if (!alertShown.current) {
+        alert("Your session has expired. Please login again.");
+        alertShown.current = true;
+      }
+      localStorage.removeItem("accessToken");
+      navigate("/sign-in");
     }
   };
 

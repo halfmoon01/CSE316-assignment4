@@ -23,10 +23,8 @@ function App() {
     const checkLoginStatus = async () => {
       const token = localStorage.getItem("accessToken");
       if(!token){
-        console.log("NOT LOGGED IN");
         return;
       }
-      console.log("LOGGED IN");  
       try {
           const response = await fetch("http://localhost:8080/user", {
             method: "GET",
@@ -45,7 +43,6 @@ function App() {
           console.error("Error during login status check:", error);
         }
     };
-
     checkLoginStatus();
   }, []); // 
 

@@ -14,8 +14,10 @@ const ChangeName = ({ isOpen, onClose}) => {
       return;
     }
     try {
+      // Retrieve the stored access token from localStorage
       const token = localStorage.getItem('accessToken');
 
+      // Send a POST request to the server with the new name
       const response = await fetch('http://localhost:8080/change-name', {
         method: 'POST',
         headers: {
@@ -24,12 +26,46 @@ const ChangeName = ({ isOpen, onClose}) => {
         },
         body: JSON.stringify({ newName }),
       });
-
+      // If the response is successful, show a success message
       if (response.ok) {
         alert('Name changed successfully!');
+         // Reload the page to reflect the new name
         window.location.reload();
         onClose(); 
-      } else {
+      } else if(response.status === 401){
+        // If the token is expired, attempt to refresh the token
+        console.warn("Token expired. Attempting to refresh...");
+        const refreshResponse = await fetch("http://localhost:8080/refresh", {
+          method: "POST",
+          credentials: "include",
+        });
+
+        if (refreshResponse.ok) {
+          const refreshData = await refreshResponse.json();
+          // Store the new access token
+          localStorage.setItem("accessToken", refreshData.accessToken);
+
+          let response = await fetch("http://localhost:8080/change-name", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${refreshData.accessToken}`,
+            },
+            body: JSON.stringify({ newName }),
+          });
+
+          if (response.ok) {
+            alert("Name changed successfully!");
+            window.location.reload();
+            onClose();
+          } else {
+            const data = await response.json();
+            alert(data.message || "Failed to change name.");
+          }
+        } else {
+          throw new Error("Refresh token invalid or expired.");
+        }
+      }else{
         const data = await response.json();
         alert(data.message || 'Failed to change name.');
       }

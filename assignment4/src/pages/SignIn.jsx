@@ -13,7 +13,6 @@ const SignIn = ({setUser}) => {
   });
 
   const navigate = useNavigate(); 
-
   const handleChange = (event) => {
     const { name, value } = event.target;
     setFormData({ ...formData, [name]: value });
@@ -31,6 +30,7 @@ const SignIn = ({setUser}) => {
           email: formData.email,
           password: hashedPassword,
         }),
+        credentials: "include",
       });
 
       if (response.ok) {
@@ -44,11 +44,9 @@ const SignIn = ({setUser}) => {
         const errorData = await response.json();
         alert(errorData.message || "Login failed. Please try again."); 
       }
-    } catch (error) {
-      console.error("Login failed:", error);
+    } catch(error){
       alert("Failed to connect to the server. Please try again.");
     }
-
   };
 
   return (

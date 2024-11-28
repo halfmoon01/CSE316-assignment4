@@ -25,9 +25,12 @@ const ChangeImage = ({isOpen, onClose}) => {
     }
 
     try {
-      const token = localStorage.getItem('accessToken');
-
-      const response = await fetch('http://localhost:8080/change-image', {
+      let token = localStorage.getItem('accessToken');
+      if (!token) {
+        alert("You need to login to perform this action.");
+        return;
+      }
+      let response = await fetch('http://localhost:8080/change-image', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -40,6 +43,39 @@ const ChangeImage = ({isOpen, onClose}) => {
         alert('Image changed successfully!');
         window.location.reload();
         onClose(); 
+      } else if (response.status === 401) {
+        // Token expired, try to refresh
+        console.warn("Token expired. Attempting to refresh...");
+        const refreshResponse = await fetch("http://localhost:8080/refresh", {
+          method: "POST",
+          credentials: "include",
+        });
+        // if refreshed token is ok, set it as accessToken
+        if (refreshResponse.ok) {
+          const refreshData = await refreshResponse.json();
+          localStorage.setItem("accessToken", refreshData.accessToken);
+
+          // Retry changing the image
+          response = await fetch("http://localhost:8080/change-image", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${refreshData.accessToken}`,
+            },
+            body: JSON.stringify({ image: selectedFile }),
+          });
+          // if response is okay -> alert and close the dialog
+          if (response.ok) {
+            alert("Image changed successfully!");
+            window.location.reload();
+            onClose();
+          } else {
+            const data = await response.json();
+            alert(data.message || "Failed to change image.");
+          }
+        } else {
+          throw new Error("Refresh token invalid or expired.");
+        }
       } else {
         const data = await response.json();
         alert(data.message || 'Failed to change image.');

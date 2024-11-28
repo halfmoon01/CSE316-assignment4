@@ -13,51 +13,86 @@ import ChangeName from '../dialog/ChangeName'
 
 const UserInfo = () => {
   const navigate = useNavigate();
-  const [userInfo, setUserInfo] = useState(null);
-  
     // State management: Dialog open states
     const [isImageOpen, setIsImageOpen] = useState(false);
     const [isPwdOpen, setIsPwdOpen] = useState(false);
     const [isNameOpen, setIsNameOpen] = useState(false);
     const alertShown = useRef(false); 
 
+    const [userInfo, setUserInfo] = useState(null);
     const fetchUserInfo = async () => {
-      const token = localStorage.getItem("accessToken");
-      if (!token) {
-        if (!alertShown.current) {
-          alert("You need to login to view this page.");
-          alertShown.current = true; 
-        }
-        navigate("/sign-in");
-        return; 
-      }
-
       try {
-        const response = await fetch("http://localhost:8080/user-details", {
+        let token = localStorage.getItem("accessToken");
+        // If no token is found, navigate to the sign-in pagㄷ
+        if (!token) {
+          if (!alertShown.current) {
+            alert("You need to login to view this page.");
+            alertShown.current = true;
+          }
+          navigate("/sign-in");
+          return;
+        }
+  
+        // Fetch user details using the access token
+        let response = await fetch("http://localhost:8080/user-details", {
           method: "GET",
           headers: { Authorization: `Bearer ${token}` },
-          credentials: "include", 
+          credentials: "include",
         });
-
+  
+        // If the response is successful, update the userInfo state with the data
         if (response.ok) {
           const data = await response.json();
-          setUserInfo(data); 
-        }else {
+          setUserInfo(data);
+        } else if (response.status === 401) {
+          // If the token is expired (status 401), attempt to refresh it
+          console.log("Token expired. Attempting to refresh...");
+          const refreshResponse = await fetch("http://localhost:8080/refresh", {
+            method: "POST",
+            credentials: "include", // Include cookie
+          });
+  
+          if (refreshResponse.ok) {
+            const refreshData = await refreshResponse.json();
+            localStorage.setItem("accessToken", refreshData.accessToken);
+  
+            // try again
+            response = await fetch("http://localhost:8080/user-details", {
+              method: "GET",
+              headers: {
+                Authorization: `Bearer ${refreshData.accessToken}`, // // Use the refreshed token
+              },
+              credentials: "include",
+            });
+            // If successful, update userInfo state
+            if (response.ok) {
+              console.log("Refresh Success!");
+              const data = await response.json();
+              setUserInfo(data);
+            } else {
+              throw new Error("Failed to fetch user info after refreshing token.");
+            }
+          } else {
+            throw new Error("Refresh token invalid or expired.");
+          }
+        } else {
           throw new Error("Failed to fetch user details.");
         }
-      }catch (error) {
+      } catch (error) {
         console.error("Error fetching user details:", error);
         if (!alertShown.current) {
-          alert("Invalid or expired token. Redirecting to login page.2");
+          alert("Your session has expired. Please login again.");
           alertShown.current = true;
         }
-        navigate("/home");
+        localStorage.removeItem("accessToken");
+        navigate("/sign-in");
       }
     };
-    
+  
     useEffect(() => {
-      fetchUserInfo(); 
-    }, [navigate]); 
+      fetchUserInfo();
+    }, [navigate]);
+  
   
     if (!userInfo) {
       return;

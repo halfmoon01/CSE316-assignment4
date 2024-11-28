@@ -69,7 +69,7 @@ CREATE TABLE `reservations` (
   `purpose` text NOT NULL,
   `user_name` varchar(255) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -78,7 +78,7 @@ CREATE TABLE `reservations` (
 
 LOCK TABLES `reservations` WRITE;
 /*!40000 ALTER TABLE `reservations` DISABLE KEYS */;
-INSERT INTO `reservations` VALUES (13,'2025-01-11',3,3,'swim','Lionel Messi'),(14,'2024-11-28',2,6,'study','Cristiano Ronaldo'),(15,'2025-01-08',33,2,'Seminar','David Beckham');
+INSERT INTO `reservations` VALUES (17,'2025-01-16',3,2,'dance','Lionel Messi'),(18,'2024-11-29',12,6,'Study','Lionel Messi'),(20,'2024-12-06',3,5,'meeting','Cristiano Ronaldo');
 /*!40000 ALTER TABLE `reservations` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -105,7 +105,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,'messi@gmail.com','4e076c53347d391e8da221bca871ba84f0aef59c2353359463477df242ee80b','Lionel Messi','https://res.cloudinary.com/dncizjyjo/image/upload/v1732716608/ij2pmy5evsrjcuktbe0m.jpg'),(2,'ronaldo@gmail.com','adfb12fd987422ddd49ed94f48e54db1339af938b10a732fe8bc79e64a7445f','Cristiano Ronaldo','https://res.cloudinary.com/dncizjyjo/image/upload/v1732715713/mtoi7azeq98zwd1f76jt.jpg'),(3,'david@gmail.com','20eaa8dee9adb0d7ad13ab40297f5a4e2617d51c6fb8c335c9cf1f3d9d4336a8','David Beckham','https://res.cloudinary.com/dncizjyjo/image/upload/v1732717228/boqu0zzez0w7k4agfrwd.jpg');
+INSERT INTO `users` VALUES (1,'messi@gmail.com','5be2c165fc678e917cdb347c64178c7ce689446a26d76fe8c7c90d917c4b5e4','Lionel Messi','https://res.cloudinary.com/dncizjyjo/image/upload/v1732803483/zw0cz5ovuyfxvnyn8jhz.jpg'),(2,'ronaldo@gmail.com','b06a4c33c2fe2921f20ffb27714428fbd8e70fbf12a7ec755047848d06a8258','Cristiano Ronaldo','https://res.cloudinary.com/dncizjyjo/image/upload/v1732804412/gwjnqqaizgbquwqcat4z.jpg'),(3,'david@gmail.com','20eaa8dee9adb0d7ad13ab40297f5a4e2617d51c6fb8c335c9cf1f3d9d4336a8','David Beckham','https://res.cloudinary.com/dncizjyjo/image/upload/v1732717228/boqu0zzez0w7k4agfrwd.jpg');
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -118,4 +118,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-11-27 23:37:47
+-- Dump completed on 2024-11-28 23:52:50

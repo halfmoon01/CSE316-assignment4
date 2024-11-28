@@ -2,32 +2,33 @@
 //Sanghyun.Jun.1@stonybrook.edu
 
 
-import React, { useState , useEffect} from 'react';
+import React, { useState , useEffect, useRef} from 'react';
 import { Link, useNavigate} from 'react-router-dom';
 import homeIcon from '../AssignImages/home.png';
 import userIcon from '../AssignImages/user.png';
 import menuIcon from '../AssignImages/menu.png';
 import './Navbar.css';
-
 const Navbar = ({user, setUser}) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [userInfo , setUserInfo] = useState(null);
+  const alertShown = useRef(false); 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
   const navigate = useNavigate(); 
 
+  const [userInfo , setUserInfo] = useState(null);
+  
   const fetchUserInfo = async () => {
     try {
-      const token = localStorage.getItem("accessToken");
+      let token = localStorage.getItem("accessToken");
 
       if (!token) {
-        setUserInfo(null); 
+        setUserInfo(null);
         return;
       }
 
-      const response = await fetch('http://localhost:8080/user-details', {
-        method: 'GET',
+      let response = await fetch("http://localhost:8080/user-details", {
+        method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -35,15 +36,42 @@ const Navbar = ({user, setUser}) => {
 
       if (response.ok) {
         const data = await response.json();
-        setUserInfo(data); 
+        setUserInfo(data);
+      } else if (response.status === 401) {
+        // if expired (401) request for refresh
+        const refreshResponse = await fetch("http://localhost:8080/refresh", {
+          method: "POST",
+          credentials: "include", // include cookies
+        });
+
+        if (refreshResponse.ok) {
+          const refreshData = await refreshResponse.json();
+          localStorage.setItem("accessToken", refreshData.accessToken);
+
+          // retry with new token
+          response = await fetch("http://localhost:8080/user-details", {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${refreshData.accessToken}`,
+            },
+          });
+
+          if (response.ok) {
+            const data = await response.json();
+            setUserInfo(data);
+          } else {
+            throw new Error("Failed to fetch user info after refreshing token.");
+          }
+        } else {
+          throw new Error("Refresh token invalid or expired.");
+        }
       } else {
-        console.error('Failed to fetch user details');
-        setUserInfo(null); 
-        localStorage.removeItem("accessToken");
+        throw new Error("Failed to fetch user details.");
       }
     } catch (error) {
-      console.error('Error fetching user info:', error);
-      setUserInfo(null); 
+      console.error("Error fetching user info:", error);
+      setUserInfo(null);
+      localStorage.removeItem("accessToken");
     }
   };
 
@@ -51,10 +79,16 @@ const Navbar = ({user, setUser}) => {
     fetchUserInfo();
   }, []);
 
+
   const handleLogout = async () => {
     try {
+      await fetch("http://localhost:8080/logout", {
+        method: "POST",
+        credentials: "include", // 쿠키 포함
+      });
+
       localStorage.removeItem("accessToken");
-      setUser(null);
+      setUserInfo(null);
       alert("Logged out successfully!");
       navigate("/home");
     } catch (error) {
@@ -89,7 +123,7 @@ const Navbar = ({user, setUser}) => {
                 <Link to="/my-reservation">Reservation History</Link>
               </div>
             </li>
-            {user ? (
+            {userInfo? (
                 <>
                   <li onClick={handleLogout}>
                     Sign Out
@@ -103,7 +137,7 @@ const Navbar = ({user, setUser}) => {
           </div>
 
           <li className="right-button">
-            {user ? (
+            {userInfo? (
               <div className = "group">
                 <img src={userInfo?.image_url || userIcon} className='image' />
                 <button onClick={handleLogout}>Sign Out</button>
@@ -147,7 +181,7 @@ const Navbar = ({user, setUser}) => {
               <Link to="/my-reservation">Reservation History</Link>
             </div>
           </li>
-          {user ? (
+          {userInfo ? (
                 <>
                   <li onClick={handleLogout}>
                     Sign Out

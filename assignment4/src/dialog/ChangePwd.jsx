@@ -17,9 +17,15 @@ const ChangePwd = ({ isOpen, onClose , email}) => {
     try {
       const hashedOldPassword = hashutil(email, oldPassword);
       const hashedNewPassword = hashutil(email, newPassword);
-      const token = localStorage.getItem('accessToken');
+      // Get hashed password
+      let token = localStorage.getItem('accessToken');
+      
+      if (!token) {
+        alert("You need to login to perform this action.");
+        return;
+      }
 
-      const response = await fetch('http://localhost:8080/change-password', {
+      let response = await fetch('http://localhost:8080/change-password', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -31,6 +37,41 @@ const ChangePwd = ({ isOpen, onClose , email}) => {
       if (response.ok) {
         alert('Password changed successfully!');
         onClose();
+      } else if (response.status === 401) {
+        // Token expired, try to refresh
+        console.warn("Token expired. Attempting to refresh...");
+        const refreshResponse = await fetch("http://localhost:8080/refresh", {
+          method: "POST",
+          credentials: "include",
+        });
+
+        if (refreshResponse.ok) {
+          const refreshData = await refreshResponse.json();
+          localStorage.setItem("accessToken", refreshData.accessToken);
+
+          // Retry changing the password
+          response = await fetch("http://localhost:8080/change-password", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${refreshData.accessToken}`,
+            },
+            body: JSON.stringify({
+              oldPassword: hashedOldPassword,
+              newPassword: hashedNewPassword,
+            }),
+          });
+
+          if (response.ok) {
+            alert("Password changed successfully!");
+            onClose();
+          } else {
+            const data = await response.json();
+            alert(data.message || "Failed to change password.");
+          }
+        } else {
+          throw new Error("Refresh token invalid or expired.");
+        }
       } else {
         const data = await response.json();
         alert(data.message || 'Failed to change password.');

@@ -9,6 +9,7 @@ import cors from 'cors';
 import fs from 'fs/promises';
 import path from 'path';
 import jwt from 'jsonwebtoken';
+import cookieParser from "cookie-parser";
 
 dotenv.config(); 
 const app = express(); 
@@ -18,6 +19,7 @@ app.use(cors({
   }));
 
 app.use(express.json());
+app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 
 
@@ -44,9 +46,13 @@ cloudinary.v2.config({
     api_secret: process.env.CLOUD_API_SECRET
 });
 
-// Generate JWT
+// Generate Access token
 const generateAccessToken = (email) => {
-  return jwt.sign({ email }, process.env.JWT_SECRET, { expiresIn: "1h" });
+  return jwt.sign({ email }, process.env.JWT_SECRET, { expiresIn: '1h' });
+};
+// Generate refresh token
+const generateRefreshToken = (email) => {
+  return jwt.sign({ email }, process.env.REFRESH_SECRET, { expiresIn: "7d" });
 };
 
 // Update the image URL of a facility in the datase to cloudinary fixed URL
@@ -135,18 +141,45 @@ app.post("/login", async (req, res) => {
             return res.status(401).json({ message: "Wrong Email or wrong password." });
         }
 
+        const accessToken = generateAccessToken(user.email);
+        const refreshToken = generateRefreshToken(user.email);
 
-        const token = generateAccessToken(user.email);
+        res.cookie("refreshToken", refreshToken, {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === "production",
+          sameSite: "strict",
+        });
 
         res.status(200).json({
           message: "Login successful.",
-          accessToken: token,
+          accessToken,
           name: user.name,
       });
     });
 });
 
+// Refresh access token using refresh token
+app.post("/refresh", (req, res) => {
+  const refreshToken = req.cookies.refreshToken;
+
+  if (!refreshToken) {
+    return res.status(401).json({ message: "Refresh Token is missing." });
+  }
+
+  try {
+    const decoded = jwt.verify(refreshToken, process.env.REFRESH_SECRET);
+    const accessToken = generateAccessToken(decoded.email); // Generate new access token
+
+    res.status(200).json({ accessToken });// Respond with new access token
+  } catch (error) {
+    console.error("Refresh token verification failed:", error.message);
+    res.status(403).json({ message: "Invalid or expired refresh token." }); // Handle token expiration
+  }
+});
+
+// Logout endpoint: Clear the refresh token cookie
 app.post('/logout', (req, res) => {
+    res.clearCookie("refreshToken"); // remove cookie token
     res.status(200).json({ message: 'Logged out successfully.' });
   });
   
@@ -265,7 +298,6 @@ app.get('/user', (req, res) => {
       req.user = decoded; 
       next(); 
     } catch (error) {
-      console.error("Token verification failed:", error.message);
       res.status(401).json({ message: "Invalid or expired token." });
     }
   };
@@ -359,20 +391,20 @@ app.post('/change-password', authenticateToken, async (req, res) => {
 
   app.post('/change-image', authenticateToken, async (req, res) => {
     try {
-      const { image } = req.body; // Base64 이미지 데이터
+      const { image } = req.body; 
       const userEmail = req.user.email;
   
       if (!image) {
         return res.status(400).json({ message: 'Image is required.' });
       }
   
-      // Cloudinary에 이미지 업로드
+      // Cloudinary image upload 
       const uploadResponse = await cloudinary.uploader.upload(image, {
         folder: 'user_images',
         public_id: `user_${userEmail}`,
       });
   
-      // 반환된 URL을 DB에 저장
+      // save converted url to DB
       const query = 'UPDATE users SET image_url = ? WHERE email = ?';
       db.query(query, [uploadResponse.secure_url, userEmail], (err) => {
         if (err) {
